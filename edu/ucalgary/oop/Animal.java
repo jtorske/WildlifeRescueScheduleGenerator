@@ -1,3 +1,5 @@
+package edu.ucalgary.oop;
+
 public class Animal{
     private final int ANIMALID;
     private final String ANIMALSPECIES;
