@@ -2,7 +2,7 @@ package edu.ucalgary.oop;
 import java.util.regex.*;
 
 public class Animal{
-    private final int ANIMALID;
+    private final Integer ANIMALID;
     private final String ANIMALSPECIES;
     private boolean isOrphaned = false;
     private ActiveTimes activeTime;
@@ -12,11 +12,13 @@ public class Animal{
 
     /**
      * Constructor of Animal, sets all initial field values for the animal.
-     * @param animalID
-     * @param animalNickname
-     * @param animalSpecies
+     * @param animalID  An (Integer) ID of the animal.
+     * @param animalNickname Name of the animal.
+     * @param animalSpecies Species of the animal.
+     * Note:
+     * You can convert an int to an Integer by using the valueOf() method of the Integer class.
      */
-    public Animal( int animalID, String animalNickname, String animalSpecies ){
+    public Animal( Integer animalID, String animalNickname, String animalSpecies ){
         this.ANIMALID = animalID;
         this.ANIMALSPECIES = animalSpecies;
         this.animalNickname = animalNickname;
@@ -83,7 +85,7 @@ public class Animal{
      * Gets the ID of the animal.
      * @return the ID of the animal.
      */
-    public int getAnimalID(){
+    public Integer getAnimalID(){
         return this.ANIMALID;
     }
 
