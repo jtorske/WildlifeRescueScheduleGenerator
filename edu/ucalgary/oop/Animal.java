@@ -7,6 +7,7 @@ public class Animal{
     private boolean isOrphaned = false;
     private ActiveTimes activeTime;
     private String animalNickname;
+    private Feeding meal;
     private final Pattern patternIsOrphaned = Pattern.compile("^[a-zA-Z]+$");
 
 
@@ -26,28 +27,42 @@ public class Animal{
         //check the pattern of the animal's name, if there are multiple names, set isOphaned to true.
         Matcher matcher = this.patternIsOrphaned.matcher(this.animalNickname);
         if (!matcher.find()){
+            /**
+             * If animal is Orphaned, do the following.
+             */
             setIsOrphaned(true);
-        }
-
-        //  do specific things based on the animal's species.
-        switch(this.ANIMALSPECIES){
-            case "coyote":
-                setActiveTime(ActiveTimes.CREPUSCULAR);
-                break;
-            case "porcupine":
-                setActiveTime(ActiveTimes.CREPUSCULAR);
-                break;
-            case "fox":
-                setActiveTime(ActiveTimes.NOCTURNAL);
-                break;
-            case "raccoon":
-                setActiveTime(ActiveTimes.NOCTURNAL);
-                break;
-            case "beaver":
-                setActiveTime(ActiveTimes.DIURNAL);
-                break;
+        }else{
+            /**
+             * If the animal is an not Orphaned, aka an adult,
+             * do specific things based on the animal's species.
+             */ 
+            switch(this.ANIMALSPECIES){
+                case "coyote":
+                    setActiveTime(ActiveTimes.CREPUSCULAR);
+                    meal = new Feeding(5, 10);
+                    break;
+                case "porcupine":
+                    setActiveTime(ActiveTimes.CREPUSCULAR);
+                    meal = new Feeding(5, 0);
+                    break;
+                case "fox":
+                    setActiveTime(ActiveTimes.NOCTURNAL);
+                    meal = new Feeding(5, 5);
+                    break;
+                case "raccoon":
+                    setActiveTime(ActiveTimes.NOCTURNAL);
+                    meal = new Feeding(5, 0);
+                    break;
+                case "beaver":
+                    setActiveTime(ActiveTimes.DIURNAL);
+                    meal = new Feeding(5, 0);
+                    break;
+            }
         }
     }
+
+
+    
 
     /**
      * Sets whether or not the animal is orphaned.
@@ -63,6 +78,14 @@ public class Animal{
      */
     public void setActiveTime(ActiveTimes activeTime){
         this.activeTime = activeTime;
+    }
+
+    /**
+     * Gets the feeding object of the animal.
+     * @return the feeding object of the animal.
+     */
+    public Feeding getMeal(){
+        return this.meal;
     }
 
     /**
