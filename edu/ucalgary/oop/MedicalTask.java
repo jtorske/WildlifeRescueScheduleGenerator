@@ -1,13 +1,13 @@
 package edu.ucalgary.oop;
 
-public class Task {
+public class MedicalTask {
  
     private int taskID;
     private String description;
     private int duration;
     private int maxWindow;
 
-    public Task(int taskID, String description, int duration, int maxWindow) {
+    public MedicalTask(int taskID, String description, int duration, int maxWindow) {
         this.taskID = taskID;
         this.description = description;
         this.duration = duration;

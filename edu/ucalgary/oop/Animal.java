@@ -10,6 +10,12 @@ public class Animal{
     private final Pattern patternIsOrphaned = Pattern.compile("^[a-zA-Z]+$");
 
 
+    /**
+     * Constructor of Animal, sets all initial field values for the animal.
+     * @param animalID
+     * @param animalNickname
+     * @param animalSpecies
+     */
     public Animal( int animalID, String animalNickname, String animalSpecies ){
         this.ANIMALID = animalID;
         this.ANIMALSPECIES = animalSpecies;
