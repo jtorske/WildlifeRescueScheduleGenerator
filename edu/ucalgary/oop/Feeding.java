@@ -1,36 +1,59 @@
 package edu.ucalgary.oop;
 
-// Missing comments for this class.
 public class Feeding {
     private final int prepTime;
     private final int durationPerAnimal;
     private int numberOfAnimals;
     private int maxWindow = 3;
 
-    // Called in Animal.java constructor.
-    public Feeding( int durationPerAnimal, int prepTime  ){
+    /**
+     * Constructs a Feeding object with the specified feeding duration per animal and preparation time.
+     * @param durationPerAnimal the feeding duration per animal
+     * @param prepTime the preparation time for feeding
+     * note: This constructor is called in the Animal.java constructor.
+     */
+    public Feeding(int durationPerAnimal, int prepTime) {
         this.prepTime = prepTime;
         this.durationPerAnimal = durationPerAnimal;
     }
 
-    public void setMaxWindow( int maxWindow ){
+    /**
+     * Sets the maximum feeding window.
+     * @param maxWindow the maximum feeding window
+     */
+    public void setMaxWindow(int maxWindow) {
         this.maxWindow = maxWindow;
     }
 
-    public int getPrepTime(){
+    /**
+     * Returns the preparation time.
+     * @return the preparation time
+     */
+    public int getPrepTime() {
         return this.prepTime;
     }
 
-    public int getDurationPerAnimal(){
+    /**
+     * Returns the feeding duration per animal.
+     * @return the feeding duration per animal
+     */
+    public int getDurationPerAnimal() {
         return this.durationPerAnimal;
     }
 
-    public int getNumberOfAnimals(){
+    /**
+     * Returns the number of animals.
+     * @return the number of animals
+     */
+    public int getNumberOfAnimals() {
         return numberOfAnimals;
     }
 
-    public int getMaxWindow(){
+    /**
+     * Returns the maximum feeding window.
+     * @return the maximum feeding window
+     */
+    public int getMaxWindow() {
         return maxWindow;
     }
-
 }
