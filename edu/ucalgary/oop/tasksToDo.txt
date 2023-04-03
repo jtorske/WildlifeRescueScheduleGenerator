@@ -9,3 +9,5 @@ Here is a note area to remind each other what is missing in the project:
    other than porcupines which take 10 mins. (done)
 
 3. Modify main class
+
+4. GUI???
