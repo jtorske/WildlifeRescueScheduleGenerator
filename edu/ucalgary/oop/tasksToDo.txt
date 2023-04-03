@@ -8,3 +8,4 @@ Here is a note area to remind each other what is missing in the project:
 2. Need to make cage class, all cage cleaning times are 5 mins,
    other than porcupines which take 10 mins.
 
+3. Make main class
