@@ -12,7 +12,7 @@ public class GUI {
     private JTextField animalNicknameField, animalSpeciesField, taskField, startHourField;
     private JButton submitButton;
     private Connection connection;
-    private Statement statement;
+    private Statement statement1, statement2;
     private ResultSet resultSet;
 
     public GUI() {
@@ -46,7 +46,8 @@ public class GUI {
             connection = DriverManager.getConnection(
                     "jdbc:mysql://localhost/ewr",
                     "oop", "password");
-            statement = connection.createStatement();
+            statement1 = connection.createStatement();
+            statement2 = connection.createStatement(); // Initialize the second Statement object
             JOptionPane.showMessageDialog(null, "Successfully connected to the database");
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, "Failed to connect to the database: " + ex.getMessage());
@@ -62,7 +63,7 @@ public class GUI {
                     String task = taskField.getText();
                     int startHour = Integer.parseInt(startHourField.getText());
 
-                    resultSet = statement.executeQuery("SELECT AnimalID FROM ANIMALS WHERE AnimalNickname = '"
+                    resultSet = statement1.executeQuery("SELECT AnimalID FROM ANIMALS WHERE AnimalNickname = '"
                             + animalNickname + "' AND AnimalSpecies = '" + animalSpecies + "'");
                     if (!resultSet.next()) {
                         JOptionPane.showMessageDialog(null, "No animal with the given nickname and species was found");
@@ -70,7 +71,7 @@ public class GUI {
                     }
                     int animalID = resultSet.getInt("AnimalID");
 
-                    resultSet = statement.executeQuery("SELECT TaskID FROM TASKS WHERE Description = '" + task + "'");
+                    resultSet = statement2.executeQuery("SELECT TaskID FROM TASKS WHERE Description = '" + task + "'");
                     if (!resultSet.next()) {
                         JOptionPane.showMessageDialog(null, "The task does not exist");
                         return;
