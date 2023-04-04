@@ -41,17 +41,22 @@ public class GUI {
         panel.add(startHourLabel);
         panel.add(startHourField);
 
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection(
+                    "jdbc:mysql://localhost/ewr",
+                    "oop", "password");
+            statement = connection.createStatement();
+            JOptionPane.showMessageDialog(null, "Successfully connected to the database");
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "Failed to connect to the database: " + ex.getMessage());
+        }
+
         submitButton = new JButton("Submit");
         submitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    Class.forName("com.mysql.cj.jdbc.Driver");
-                    connection = DriverManager.getConnection(
-                            "jdbc:mysql://localhost/EWR",
-                            "oop", "password");
-                    statement = connection.createStatement();
-
                     String animalNickname = animalNicknameField.getText();
                     String animalSpecies = animalSpeciesField.getText();
                     String task = taskField.getText();
@@ -59,11 +64,17 @@ public class GUI {
 
                     resultSet = statement.executeQuery("SELECT AnimalID FROM ANIMALS WHERE AnimalNickname = '"
                             + animalNickname + "' AND AnimalSpecies = '" + animalSpecies + "'");
-                    resultSet.next();
+                    if (!resultSet.next()) {
+                        JOptionPane.showMessageDialog(null, "No animal with the given nickname and species was found");
+                        return;
+                    }
                     int animalID = resultSet.getInt("AnimalID");
 
                     resultSet = statement.executeQuery("SELECT TaskID FROM TASKS WHERE Description = '" + task + "'");
-                    resultSet.next();
+                    if (!resultSet.next()) {
+                        JOptionPane.showMessageDialog(null, "The task does not exist");
+                        return;
+                    }
                     int taskID = resultSet.getInt("TaskID");
 
                     String sql = "INSERT INTO TREATMENTS (AnimalID, TaskID, StartHour) VALUES (?, ?, ?)";

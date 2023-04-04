@@ -10,6 +10,8 @@ Here is a note area to remind each other what is missing in the project:
 
 3. Modify main class
 
-4. GUI??? WIP: need to figure out how to connect inputs from GUI to database
+4. GUI:
+    issue inputting data: illegal operation on result set (needs fix)
+    
 
 5. put the junit files in lib folder. the two files for testing.
