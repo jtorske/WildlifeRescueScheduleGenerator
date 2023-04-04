@@ -48,8 +48,8 @@ public class GUI {
                 try {
                     Class.forName("com.mysql.cj.jdbc.Driver");
                     connection = DriverManager.getConnection(
-                            "jdbc:mysql://localhost:3306/EWR?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC",
-                            "root", "password");
+                            "jdbc:mysql://localhost/EWR",
+                            "oop", "password");
                     statement = connection.createStatement();
 
                     String animalNickname = animalNicknameField.getText();
