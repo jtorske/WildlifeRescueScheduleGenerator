@@ -7,9 +7,10 @@ import java.util.*;
  * Class meant to access the database.
  * Note:    
  *                     (THIS IS IMPORTANT!!!)
- * Every time, to call a method, it is expected that you follow the 3 steps below:
+ * Follow the steps below to access the database:
  * 1.   Use createConnection() to connect and get the latest version of the database.
- * 2.   Use the desired method to make queries to the database.
+ * 2.   Use the desired methods to make queries to the database. `results` implicitly 
+ *      closes everytime a new results is open through a different method.
  * 3.   Use the close() method to disconnect from the database.
  */
 public class ConnectDatabase {
@@ -135,32 +136,6 @@ public class ConnectDatabase {
         }
         return treatmentList;
     }
-
-    public void insertNewTask( Integer taskID, String description, int duration, int maxWindow ){
-        try{
-            String query = "INSERT INTO TASKS (TaskID, Description, Duration, MaxWindow) VALUES (?,?,?,?)";
-            PreparedStatement myStmt = dbConnect.prepareStatement(query);
-
-            myStmt.setString( 1, taskID.toString() );
-            myStmt.setString( 2, description );
-            myStmt.setString( 3, Integer.toString(duration) );
-            myStmt.setString( 4, Integer.toString(maxWindow) );
-
-            int rowCount = myStmt.executeUpdate();  // rowCount counts the amount of rows affected in table.
-
-            myStmt.close();
-
-        } catch ( SQLException e ) {
-            e.printStackTrace();
-        }
-    }
-
-
-    /**
-     * Missing:
-     * insertTask(){}
-     * deleteTask(){}
-     */
 
 
 
