@@ -3,7 +3,7 @@ package edu.ucalgary.oop;
 public class Cage {
     private final Integer CAGEID;
     private final String ANIMALSPECIES;
-    private int cleaningTime;
+    private int cleaningTime = 5;
 
     /**
      * Constructor of Cage, sets all initial field values for the cage.
@@ -16,8 +16,6 @@ public class Cage {
 
         if (animalSpecies.equalsIgnoreCase("porcupine")) {
             this.cleaningTime = 10;
-        } else {
-            this.cleaningTime = 5;
         }
     }
 
