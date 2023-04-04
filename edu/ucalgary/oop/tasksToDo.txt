@@ -10,4 +10,6 @@ Here is a note area to remind each other what is missing in the project:
 
 3. Modify main class
 
-4. GUI???
+4. GUI??? week 12. Please learn it, i dont wanna :(
+
+5. put the junit files in lib folder. the two files for testing.
