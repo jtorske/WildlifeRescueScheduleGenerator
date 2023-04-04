@@ -14,6 +14,7 @@ public class GUI {
     private Connection connection;
     private Statement statement1, statement2;
     private ResultSet resultSet;
+    private JButton showValidValuesButton;
 
     public GUI() {
         frame = new JFrame("Animal Treatment Information");
@@ -95,8 +96,59 @@ public class GUI {
                 }
             }
         });
-        panel.add(submitButton);
+        showValidValuesButton = new JButton("Show Valid Values");
+        showValidValuesButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    JFrame validValuesFrame = new JFrame("Valid Values");
+                    validValuesFrame.setSize(400, 400);
+                    validValuesFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                    validValuesFrame.setLayout(new GridLayout(3, 2));
 
+                    DefaultListModel<String> nicknamesListModel = new DefaultListModel<>();
+                    DefaultListModel<String> speciesListModel = new DefaultListModel<>();
+                    DefaultListModel<String> tasksListModel = new DefaultListModel<>();
+
+                    resultSet = statement1.executeQuery("SELECT DISTINCT AnimalNickname FROM ANIMALS");
+                    while (resultSet.next()) {
+                        nicknamesListModel.addElement(resultSet.getString("AnimalNickname"));
+                    }
+
+                    resultSet = statement1.executeQuery("SELECT DISTINCT AnimalSpecies FROM ANIMALS");
+                    while (resultSet.next()) {
+                        speciesListModel.addElement(resultSet.getString("AnimalSpecies"));
+                    }
+
+                    resultSet = statement2.executeQuery("SELECT DISTINCT Description FROM TASKS");
+                    while (resultSet.next()) {
+                        tasksListModel.addElement(resultSet.getString("Description"));
+                    }
+
+                    JLabel nicknamesHeader = new JLabel("Animal Nicknames");
+                    JLabel speciesHeader = new JLabel("Animal Species");
+                    JLabel tasksHeader = new JLabel("Tasks");
+
+                    JList<String> nicknamesList = new JList<>(nicknamesListModel);
+                    JList<String> speciesList = new JList<>(speciesListModel);
+                    JList<String> tasksList = new JList<>(tasksListModel);
+
+                    validValuesFrame.add(nicknamesHeader);
+                    validValuesFrame.add(new JScrollPane(nicknamesList));
+                    validValuesFrame.add(speciesHeader);
+                    validValuesFrame.add(new JScrollPane(speciesList));
+                    validValuesFrame.add(tasksHeader);
+                    validValuesFrame.add(new JScrollPane(tasksList));
+
+                    validValuesFrame.setVisible(true);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, ex.getMessage());
+                }
+
+            }
+        });
+        panel.add(submitButton);
+        panel.add(showValidValuesButton);
         frame.add(panel);
         frame.setVisible(true);
     }
