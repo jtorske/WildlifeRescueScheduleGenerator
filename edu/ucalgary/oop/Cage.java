@@ -17,6 +17,9 @@ public class Cage {
         if (animalSpecies.equalsIgnoreCase("porcupine")) {
             this.cleaningTime = 10;
         }
+        else {
+            this.cleaningTime = 5;
+        }
     }
 
     /**

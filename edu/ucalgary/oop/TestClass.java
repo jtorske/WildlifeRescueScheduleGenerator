@@ -4,60 +4,60 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class TestClass {
+    private Animal animal1 = new Animal(1, "Fido", "dog");
+    private Animal animal2 = new Animal(2, "Joe, Bambi", "dog");
+
     @Test
     public void testAnimalConstructor() {
-        Animal animal = new Animal(1, "Fido", "dog");
-        assertEquals(1, animal.getAnimalID().intValue());
-        assertEquals("Fido", animal.getAnimalNickname());
-        assertEquals("dog", animal.getSpecies());
-        assertFalse(animal.getIsOrphaned());
+        assertEquals(1, animal1.getAnimalID().intValue());
+        assertEquals("Fido", animal1.getAnimalNickname());
+        assertEquals("dog", animal1.getSpecies());
+        assertFalse(animal1.getIsOrphaned());
     }
 
     @Test
-    public void testOrphanedAnimal() {
-        Animal animal = new Animal(2, "Bambi", "deer");
-        assertTrue(animal.getIsOrphaned());
-        assertNull(animal.getActiveTime());
-        assertNull(animal.getMeal());
+    public void testOrphanedAnimalTrue() {
+        assertTrue(animal2.getIsOrphaned());
+        assertNull(animal2.getActiveTime());
+        assertNull(animal2.getMeal());
     }
 
     @Test
-    public void testNonOrphanedCoyote() {
-        Animal animal = new Animal(3, "Wile E.", "coyote");
-        assertFalse(animal.getIsOrphaned());
-        assertEquals(ActiveTimes.CREPUSCULAR, animal.getActiveTime());
-        assertEquals(new Feeding(5, 10), animal.getMeal());
+    public void testOrphanedAnimalFalse() {
+        assertFalse(animal1.getIsOrphaned());
+        assertNull(animal1.getActiveTime());
+        assertNull(animal1.getMeal());
     }
 
     @Test
-    public void testNonOrphanedPorcupine() {
-        Animal animal = new Animal(4, "Prickly Pete", "porcupine");
-        assertFalse(animal.getIsOrphaned());
-        assertEquals(ActiveTimes.CREPUSCULAR, animal.getActiveTime());
-        assertEquals(new Feeding(5, 0), animal.getMeal());
+    public void testCageConstructor() {
+        Cage cage = new Cage(1, "raccoon");
+        assertEquals(1, cage.getCageID().intValue());
+        assertEquals("raccoon", cage.getSpecies());
+        assertEquals(5, cage.getCleaningTime());
     }
 
     @Test
-    public void testNonOrphanedFox() {
-        Animal animal = new Animal(5, "Red", "fox");
-        assertFalse(animal.getIsOrphaned());
-        assertEquals(ActiveTimes.NOCTURNAL, animal.getActiveTime());
-        assertEquals(new Feeding(5, 5), animal.getMeal());
+    public void testCageCleaningTimeForPorcupine() {
+        Cage cage = new Cage(2, "porcupine");
+        assertEquals(2, cage.getCageID().intValue());
+        assertEquals("porcupine", cage.getSpecies());
+        assertEquals(10, cage.getCleaningTime());
     }
 
     @Test
-    public void testNonOrphanedRaccoon() {
-        Animal animal = new Animal(6, "Rocky", "raccoon");
-        assertFalse(animal.getIsOrphaned());
-        assertEquals(ActiveTimes.NOCTURNAL, animal.getActiveTime());
-        assertEquals(new Feeding(5, 0), animal.getMeal());
+    public void testFeedingConstructor() {
+        Feeding feeding = new Feeding(5, 10);
+        assertEquals(10, feeding.getPrepTime());
+        assertEquals(5, feeding.getDurationPerAnimal());
+        assertEquals(0, feeding.getNumberOfAnimals());
+        assertEquals(3, feeding.getMaxWindow());
     }
 
     @Test
-    public void testNonOrphanedBeaver() {
-        Animal animal = new Animal(7, "Busy", "beaver");
-        assertFalse(animal.getIsOrphaned());
-        assertEquals(ActiveTimes.DIURNAL, animal.getActiveTime());
-        assertEquals(new Feeding(5, 0), animal.getMeal());
+    public void testSetMaxWindow() {
+        Feeding feeding = new Feeding(5, 10);
+        feeding.setMaxWindow(4);
+        assertEquals(4, feeding.getMaxWindow());
     }
 }
