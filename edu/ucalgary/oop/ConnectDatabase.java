@@ -21,7 +21,7 @@ public class ConnectDatabase {
     public void createConnection(){
         try{
             this.dbConnect = DriverManager.getConnection(
-                "jdbc:mysql://localhost/ENSF_FinalProjectDB", 
+                "jdbc:mysql://localhost/EWR", 
                 this.user, this.password);
         } catch (SQLException e){
             e.printStackTrace();
