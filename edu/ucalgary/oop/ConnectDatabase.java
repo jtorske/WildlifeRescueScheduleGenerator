@@ -136,6 +136,26 @@ public class ConnectDatabase {
         return treatmentList;
     }
 
+    public void insertNewTask( Integer taskID, String description, int duration, int maxWindow ){
+        try{
+            String query = "INSERT INTO TASKS (TaskID, Description, Duration, MaxWindow) VALUES (?,?,?,?)";
+            PreparedStatement myStmt = dbConnect.prepareStatement(query);
+
+            myStmt.setString( 1, taskID.toString() );
+            myStmt.setString( 2, description );
+            myStmt.setString( 3, Integer.toString(duration) );
+            myStmt.setString( 4, Integer.toString(maxWindow) );
+
+            int rowCount = myStmt.executeUpdate();  // rowCount counts the amount of rows affected in table.
+
+            myStmt.close();
+
+        } catch ( SQLException e ) {
+            e.printStackTrace();
+        }
+    }
+
+
     /**
      * Missing:
      * insertTask(){}
