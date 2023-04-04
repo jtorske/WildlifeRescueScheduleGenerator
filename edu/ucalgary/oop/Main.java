@@ -21,8 +21,8 @@ public class Main {
         ConnectIDs.linkMedicalTask(task2.getTaskID(), task2);
 
         // Initialize Treatment objects
-        Treatment treatment1 = new Treatment(animal1.getAnimalID(), task1.getTaskID(), 11);
-        Treatment treatment2 = new Treatment(animal2.getAnimalID(), task2.getTaskID(), 11);
+        Treatment treatment1 = new Treatment(1, animal1.getAnimalID(), task1.getTaskID(), 11);
+        Treatment treatment2 = new Treatment(2, animal2.getAnimalID(), task2.getTaskID(), 11);
 
         // Add your input prompts, error handling, and user interaction logic here
 
