@@ -39,3 +39,6 @@ This class represents a medical task to be performed on an animal. It has attrib
 
 ### Treatment.java
 This class represents an individual treatment in the treatment table. It has attributes such as animal ID, task ID, and start hour. The class provides methods to get these attributes and links the IDs using the ConnectIDs class.
+
+### GUI.java
+This class creates the GUI that is going to be used to connect to the sql and create the schedule.
