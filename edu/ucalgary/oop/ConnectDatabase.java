@@ -15,8 +15,8 @@ import java.util.*;
  */
 public class ConnectDatabase {
     
-    final private String user = "oop";
-    final private String  password = "password";
+    final private String USER = "oop";
+    final private String  PASSWORD = "password";
     private Connection dbConnect;
     private ResultSet results;
 
@@ -32,7 +32,7 @@ public class ConnectDatabase {
         try{
             this.dbConnect = DriverManager.getConnection(
                 "jdbc:mysql://localhost/EWR", 
-                this.user, this.password);
+                this.USER, this.PASSWORD);
         } catch (SQLException e){
             e.printStackTrace();
         }
