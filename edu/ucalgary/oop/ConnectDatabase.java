@@ -137,6 +137,95 @@ public class ConnectDatabase {
         return treatmentList;
     }
 
+    /**
+     * I don't believe we should be using this in this program.
+     * It is a perminent alteration.
+     * Inserts a task into the database.
+     * @param taskID        the Id of the task you are creating,
+     *                      PLEASE DO NOT CLASh WITH AN EXISTING ID.
+     * @param description   the description of the task.
+     * @param duration      the duration of the task.
+     * @param maxWindow     the window of time that the task has to be done in, in hours.
+     * note: 
+     * just remove, `int rowCount =` and `System.out.println("Rows affected: " + rowCount);`
+     * if you do not want the println.
+     * You should be left with only `myStmt.executeUpdate();` if you do so.
+     */
+    public void insertNewTask( Integer taskID, String description, int duration, 
+    int maxWindow, ArrayList<MedicalTask> list ) throws IDExistException {
+        boolean isExist = false;
+        for (MedicalTask obj : list) {
+            if (obj.getTaskID() == taskID) {
+                isExist = true;
+                break;
+            }
+        }
+        if ( !isExist ) {
+            try {
+                String query = "INSERT INTO TASKS (TaskID, Description, Duration, MaxWindow) VALUES (?,?,?,?)";
+                PreparedStatement myStmt = dbConnect.prepareStatement(query);
+                
+                myStmt.setString(1, taskID.toString());
+                myStmt.setString(2, description);
+                myStmt.setString(3, Integer.toString(duration));
+                myStmt.setString(4, Integer.toString(maxWindow));
+                
+                int rowCount = myStmt.executeUpdate();
+                System.out.println("Rows affected: " + rowCount);            
+                
+                myStmt.close();
+
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            } 
+        }else {
+            throw new IDExistException( taskID );
+        }
+    }
+
+        
 
 
+    /**
+     * I don't believe we should be using this in this program.
+     * It is a perminent alteration.
+     * Deletes a task from the database.
+     * @param taskID    the Id of the task you are deleting.
+     * note: 
+     * just remove, `int rowCount =` and `System.out.println("Rows affected: " + rowCount);`
+     * if you do not want the println.
+     * You should be left with only `myStmt.executeUpdate();` if you do so.
+     */
+    public void deleteTask(Integer taskID, ArrayList<MedicalTask> list ) throws IDNotExistException{
+        boolean isExist = false;
+        for (MedicalTask obj : list) {
+            if (obj.getTaskID() == taskID) {
+                isExist = true;
+                break;
+            }
+        }
+        if ( isExist ) {
+            try {
+                String query = "DELETE FROM TASKS WHERE TaskID = ?";
+                PreparedStatement myStmt = dbConnect.prepareStatement(query);
+
+                myStmt.setString(1, taskID.toString());
+                            
+                int rowCount = myStmt.executeUpdate();
+                System.out.println("Rows affected: " + rowCount);
+                
+                myStmt.close();
+
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        } else {
+            throw new IDNotExistException( taskID );
+        }
+    }
+
+
+    public ResultSet getResults(){
+        return this.results;
+    }
 }
