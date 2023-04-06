@@ -44,7 +44,7 @@ public class GUI {
     private void createAndShowGUI() {
         mainFrame = new JFrame("Zoo Management");
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        mainFrame.setSize(300, 200);
+        mainFrame.setSize(300, 125);
         mainFrame.setLayout(new FlowLayout());
 
         foodInputButton = new JButton("Food Input");
@@ -60,11 +60,20 @@ public class GUI {
         mainFrame.add(showButton);
 
         mainFrame.setVisible(true);
+        JButton clearButton = new JButton("Clear");
+        clearButton.addActionListener(new ClearListener());
+        mainFrame.add(clearButton);
+
+        mainFrame.setVisible(true);
     }
 
     private class FoodInputListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            openInputWindow("Food Input");
+            JLabel idLabel = new JLabel("Animal Id:");
+            JTextField idField = new JTextField();
+            JLabel hourLabel = new JLabel("Hour:");
+            JTextField hourField = new JTextField();
+            openInputWindow("Food Input", idField, hourField);
         }
     }
 
@@ -77,6 +86,12 @@ public class GUI {
     private class ShowListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             displayLogTable();
+        }
+    }
+
+    private class ClearListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            clearLogTableAndInitializeWithTreatments();
         }
     }
 
@@ -116,15 +131,13 @@ public class GUI {
         return new DefaultTableModel(data, columnNames);
     }
 
-    private void openInputWindow(String title) {
+    private void openInputWindow(String title, JTextField idField, JTextField hourField) {
         JFrame inputFrame = new JFrame(title);
         inputFrame.setSize(300, 150);
         inputFrame.setLayout(new GridLayout(3, 2));
 
         JLabel idLabel = new JLabel("Animal Id:");
-        JTextField idField = new JTextField();
         JLabel hourLabel = new JLabel("Hour:");
-        JTextField hourField = new JTextField();
 
         inputFrame.add(idLabel);
         inputFrame.add(idField);
@@ -138,8 +151,71 @@ public class GUI {
                 // Implement the code to save the input to the database
             }
         });
+        submitButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    int animalId = Integer.parseInt(idField.getText());
+                    String hour = hourField.getText();
+
+                    String queryAnimal = "SELECT * FROM animals WHERE animalID = ?";
+                    PreparedStatement preparedStatement = connection.prepareStatement(queryAnimal);
+                    preparedStatement.setInt(1, animalId);
+                    ResultSet resultSet = preparedStatement.executeQuery();
+
+                    if (resultSet.next()) {
+                        String species = resultSet.getString("animalSpecies");
+                        String nickname = resultSet.getString("animalNickname");
+
+                        Animal animal = new Animal(animalId, nickname, species);
+                        Feeding meal = animal.getMeal();
+
+                        // Calculate total feeding time including preparation time
+                        int totalFeedingTime = meal.getPrepTime() + meal.getDurationPerAnimal();
+
+                        String insertLogSQL = "INSERT INTO log (Time, Task, Quantity, TimeSpent, TimeAvailable) " +
+                                "VALUES (?, ?, ?, ?, ?)";
+                        preparedStatement = connection.prepareStatement(insertLogSQL);
+                        preparedStatement.setString(1, hour);
+                        preparedStatement.setString(2, "Food Input: " + species);
+                        preparedStatement.setString(3,
+                                String.format("Animal ID: %d, Nickname: %s", animalId, nickname));
+                        preparedStatement.setInt(4, totalFeedingTime); // Use totalFeedingTime instead of
+                                                                       // meal.getDurationPerAnimal()
+                        preparedStatement.setInt(5, meal.getMaxWindow() - totalFeedingTime);
+
+                        preparedStatement.executeUpdate();
+
+                        JOptionPane.showMessageDialog(null, "Food input saved successfully.");
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Animal ID not found.");
+                    }
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(null, "Failed to save food input: " + ex.getMessage());
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(null, "Invalid animal ID or hour.");
+                }
+            }
+        });
 
         inputFrame.setVisible(true);
+    }
+
+    private void clearLogTableAndInitializeWithTreatments() {
+        try {
+            // Clear the log table
+            String deleteAllLogEntriesSQL = "DELETE FROM log";
+            statement1.execute(deleteAllLogEntriesSQL);
+
+            String dropLogTableSQL = "DROP TABLE IF EXISTS log";
+            statement1.execute(dropLogTableSQL);
+
+            // Re-initialize the log table with just the treatment table entries
+            createAndPopulateLogTable();
+
+            JOptionPane.showMessageDialog(null, "Log table cleared and re-initialized with treatment entries.");
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Failed to clear and re-initialize log table: " + ex.getMessage());
+        }
     }
 
     private void createAndPopulateLogTable() throws SQLException {
