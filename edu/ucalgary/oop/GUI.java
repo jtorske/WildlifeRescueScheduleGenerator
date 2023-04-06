@@ -4,6 +4,9 @@ import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class GUI {
     private JFrame frame;
@@ -15,6 +18,8 @@ public class GUI {
     private Statement statement1, statement2;
     private ResultSet resultSet;
     private JButton showValidValuesButton;
+    private JButton showTreatmentsButton;
+    private ConnectDatabase connectDatabase;
 
     public GUI() {
         frame = new JFrame("Animal Treatment Information");
@@ -22,7 +27,7 @@ public class GUI {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         panel = new JPanel();
-        panel.setLayout(new GridLayout(5, 2));
+        panel.setLayout(new GridLayout(5, 1));
 
         animalNicknameLabel = new JLabel("Animal Nickname:");
         animalNicknameField = new JTextField();
@@ -43,12 +48,11 @@ public class GUI {
         panel.add(startHourField);
 
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            connection = DriverManager.getConnection(
-                    "jdbc:mysql://localhost/ewr",
-                    "oop", "password");
+            connectDatabase = new ConnectDatabase();
+            connectDatabase.createConnection();
+            connection = connectDatabase.getConnection(); // Get the Connection object from ConnectDatabase
             statement1 = connection.createStatement();
-            statement2 = connection.createStatement(); // Initialize the second Statement object
+            statement2 = connection.createStatement();
             JOptionPane.showMessageDialog(null, "Successfully connected to the database");
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, "Failed to connect to the database: " + ex.getMessage());
@@ -104,7 +108,7 @@ public class GUI {
                     JFrame validValuesFrame = new JFrame("Valid Values");
                     validValuesFrame.setSize(400, 400);
                     validValuesFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                    validValuesFrame.setLayout(new GridLayout(3, 2));
+                    validValuesFrame.setLayout(new GridLayout(3, 1));
 
                     DefaultListModel<String> nicknamesListModel = new DefaultListModel<>();
                     DefaultListModel<String> speciesListModel = new DefaultListModel<>();
@@ -147,10 +151,80 @@ public class GUI {
 
             }
         });
+
+        showTreatmentsButton = new JButton("Show Treatments");
+        showTreatmentsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showTreatments();
+            }
+        });
+
+        panel.add(showTreatmentsButton);
+
         panel.add(submitButton);
         panel.add(showValidValuesButton);
         frame.add(panel);
         frame.setVisible(true);
+    }
+
+    private void showTreatments() {
+        try {
+            JFrame treatmentsFrame = new JFrame("Treatments");
+            treatmentsFrame.setSize(600, 400);
+            treatmentsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+            String[] columnNames = { "AnimalID", "TaskID", "StartHour" };
+            DefaultTableModel model = new DefaultTableModel(columnNames, 0);
+
+            resultSet = statement1.executeQuery("SELECT * FROM TREATMENTS");
+            while (resultSet.next()) {
+                int animalID = resultSet.getInt("AnimalID");
+                int taskID = resultSet.getInt("TaskID");
+                int startHour = resultSet.getInt("StartHour");
+
+                Object[] rowData = { animalID, taskID, startHour };
+                model.addRow(rowData);
+            }
+
+            JTable treatmentsTable = new JTable(model);
+            treatmentsFrame.add(new JScrollPane(treatmentsTable));
+
+            treatmentsFrame.setVisible(true);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+        }
+        printSchedule();
+    }
+
+    private void printSchedule() {
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            String currentDate = dateFormat.format(new Date());
+            System.out.println("Schedule for " + currentDate);
+
+            resultSet = statement1
+                    .executeQuery("SELECT t.StartHour, ts.Description, a.AnimalNickname FROM TREATMENTS t " +
+                            "JOIN TASKS ts ON t.TaskID = ts.TaskID " +
+                            "JOIN ANIMALS a ON t.AnimalID = a.AnimalID " +
+                            "ORDER BY t.StartHour, ts.Description, a.AnimalNickname");
+
+            int currentHour = -1;
+            while (resultSet.next()) {
+                int startHour = resultSet.getInt("StartHour");
+                String taskDescription = resultSet.getString("Description");
+                String animalNickname = resultSet.getString("AnimalNickname");
+
+                if (startHour != currentHour) {
+                    System.out.printf("%02d:00\n", startHour);
+                    currentHour = startHour;
+                }
+
+                System.out.println("* " + taskDescription + " (" + animalNickname + ")");
+            }
+        } catch (Exception ex) {
+            System.err.println("Error while printing the schedule: " + ex.getMessage());
+        }
     }
 
     public static void main(String args[]) {
