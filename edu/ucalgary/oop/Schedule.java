@@ -12,25 +12,32 @@ public class Schedule {
 
     public void addTask(ScheduledTask task) {
         tasks.add(task);
+        tasks.sort(Comparator.comparingInt(ScheduledTask::getHour));
+    }
+
+    public int getTotalTaskDurationForHour(int hour) {
+        int totalDuration = 0;
+        for (ScheduledTask task : tasks) {
+            if (task.getHour() == hour) {
+                totalDuration += task.getDuration(); // Assumes you have a getDuration() method in the ScheduledTask class
+            }
+        }
+        return totalDuration;
     }
 
     public void printSchedule() {
         System.out.println("Schedule:");
-        tasks.sort(Comparator.comparing(ScheduledTask::getHour));
-        int currentHour = -1;
-        for (ScheduledTask task : tasks) {
-            if (task.getHour() != currentHour) {
-                if (currentHour != -1) {
-                    System.out.println(); // Add a blank line between hours
+        for (int i = 0; i < 24; i++) {
+            System.out.println("Hour " + i + ":");
+            for (ScheduledTask task : tasks) {
+                if (task.getHour() == i) {
+                    String taskDescription = task.getDescription() + " (" + task.getTaskType().toString() + ")";
+                    if (task.getTaskType() == TaskType.TREATMENT) {
+                        taskDescription += " - " + task.getAnimalNickname();
+                    }
+                    System.out.println(taskDescription);
                 }
-                currentHour = task.getHour();
-                System.out.printf("%02d:00\n", currentHour);
             }
-            String animalDetails = task.getAnimalCount() > 1
-                    ? String.format("(%d: %s)", task.getAnimalCount(), task.getAnimalNickname())
-                    : "";
-            System.out.printf("* %s %s\n", task.getDescription(), animalDetails);
         }
     }
-
 }
