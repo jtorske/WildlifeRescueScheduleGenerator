@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.List;
 
@@ -42,58 +43,90 @@ public class GUI {
     public void generateSchedule() {
         ConnectDatabase connectDB = new ConnectDatabase();
         connectDB.createConnection();
-
+    
         ArrayList<Animal> animalList = connectDB.selectAnimals();
         ArrayList<MedicalTask> taskList = connectDB.selectTasks();
         ArrayList<Treatment> treatmentList = connectDB.selectTreatments();
-
+    
         Schedule schedule = new Schedule();
-
-        // 5. Add all treatments to the schedule
+    
+        // 1. Add all treatments to the schedule
         for (Treatment treatment : treatmentList) {
-            int treatmentHour = treatment.getStartHour(); // Assume you have a method to get treatment hour
+            int treatmentHour = treatment.getStartHour();
             MedicalTask associatedTask = findTaskById(taskList, treatment.getTaskID());
             String treatmentDescription = associatedTask != null ? associatedTask.getDescription()
                     : "Unknown treatment";
-            schedule.addTask(new ScheduledTask(treatmentHour, treatmentDescription, TaskType.TREATMENT));
+            Animal treatmentAnimal = findAnimalById(animalList, treatment.getAnimalID());
+            String animalNickname = treatmentAnimal != null ? treatmentAnimal.getAnimalNickname() : "Unknown animal";
+            schedule.addTask(new ScheduledTask(treatmentHour, treatmentDescription, TaskType.TREATMENT, treatmentHour, animalNickname));
         }
-        schedule.printSchedule();
+    
 
-        connectDB.close();
+    connectDB.close();
 
-        // 2. Place one feeding time for each animal based on their sleep schedule
-        Map<String, Integer> speciesFeedingTimes = new HashMap<>();
+        // 2. Filter out orphaned animals
+        ArrayList<Animal> nonOrphanedAnimals = new ArrayList<>();
         for (Animal animal : animalList) {
-            int feedingHour = animal.getMeal().getFeedingHour(animal.getActiveTime());
-            speciesFeedingTimes.put(animal.getSpecies(), feedingHour);
-        }
-
-        // 3. Stack same species feeding times when viable
-        for (Map.Entry<String, Integer> entry : speciesFeedingTimes.entrySet()) {
-            String species = entry.getKey();
-            int feedingHour = entry.getValue();
-            List<Animal> sameSpeciesAnimals = new ArrayList<>();
-            for (Animal animal : animalList) {
-                if (animal.getSpecies().equals(species)) {
-                    sameSpeciesAnimals.add(animal);
-                }
-            }
-            if (sameSpeciesAnimals.size() > 1) {
-                schedule.addTask(new ScheduledTask(feedingHour, "Feeding all " + species, TaskType.FEEDING,
-                        sameSpeciesAnimals.size()));
-            } else {
-                for (Animal animal : sameSpeciesAnimals) {
-                    schedule.addTask(new ScheduledTask(feedingHour, "Feeding " + animal.getAnimalNickname(),
-                            TaskType.FEEDING, 0));
-                }
+            if (!animal.getIsOrphaned()) {
+                nonOrphanedAnimals.add(animal);
             }
         }
+    
+// 3. Calculate feeding times and durations
+LinkedHashMap<String, ArrayList<Animal>> speciesAnimalsMap = new LinkedHashMap<>();
+for (Animal animal : nonOrphanedAnimals) {
+    int feedingHour = animal.getMeal().getFeedingHour(animal.getActiveTime());
+    String species = animal.getSpecies();
+    if (speciesAnimalsMap.containsKey(species)) {
+        speciesAnimalsMap.get(species).add(animal);
+    } else {
+        ArrayList<Animal> speciesAnimals = new ArrayList<>();
+        speciesAnimals.add(animal);
+        speciesAnimalsMap.put(species, speciesAnimals);
+    }
+}
 
-        // 4. Schedule cage cleaning once a day
-        int cleaningHour = 10; // Adjust the cleaning hour as needed
-        schedule.addTask(new ScheduledTask(cleaningHour, "Cage cleaning", TaskType.CAGE_CLEANING));
+// 4. Add feeding tasks based on available time in each hour after treatments
+for (int hour = 0; hour < 24; hour++) {
+    for (Map.Entry<String, ArrayList<Animal>> entry : speciesAnimalsMap.entrySet()) {
+        String species = entry.getKey();
+        ArrayList<Animal> speciesAnimals = entry.getValue();
 
-        // Add your scheduling logic here, updating the schedule object with tasks
+        int totalFeedingDuration = 0;
+        for (Animal animal : speciesAnimals) {
+            if (animal.getMeal().getFeedingHour(animal.getActiveTime()) == hour) {
+                totalFeedingDuration += animal.getMeal().getDurationPerAnimal();
+            }
+        }
+
+        int remainingTimeInHour = 60 - schedule.getTotalTaskDurationForHour(hour);
+
+        if (totalFeedingDuration > 0 && remainingTimeInHour > 0) {
+            int animalsFed = 0;
+            for (Animal animal : speciesAnimals) {
+                if (animal.getMeal().getFeedingHour(animal.getActiveTime()) == hour) {
+                    int animalFeedingDuration = animal.getMeal().getDurationPerAnimal();
+                    if (animalFeedingDuration <= remainingTimeInHour) {
+                        schedule.addTask(new ScheduledTask(hour, "Feeding", TaskType.FEEDING, species, animal.getAnimalNickname(), 1, animalFeedingDuration));
+                        animalsFed++;
+                        remainingTimeInHour -= animalFeedingDuration;
+                    } else {
+                        break;
+                    }
+                }
+            }
+            speciesAnimals.subList(0, animalsFed).clear();
+        }
+    }
+}
+
+        // 5. Schedule cage cleaning once a day
+        // ... (your existing code for cage cleaning)
+    
+        // Call printSchedule() after adding all tasks to the schedule
+        schedule.printSchedule();
+    
+        connectDB.close();
     }
 
     private Animal findAnimalById(ArrayList<Animal> animals, Integer animalId) {
