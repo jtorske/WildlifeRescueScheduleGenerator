@@ -26,23 +26,18 @@ public class ConnectDatabase {
         // default constructor.
     }
 
-    private Connection connection;
-
-    public void createConnection() throws SQLException {
-        // ...
-        connection = DriverManager.getConnection(
-                "jdbc:mysql://localhost/ewr",
-                "oop", "password");
-        // ...
-    }
-
-    public Connection getConnection() {
-        return connection;
-    }
-
     /**
      * Creates a connection between the sql database and the program.
      */
+    public void createConnection() {
+        try {
+            this.dbConnect = DriverManager.getConnection(
+                    "jdbc:mysql://localhost/EWR",
+                    this.USER, this.PASSWORD);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * Closes the database.

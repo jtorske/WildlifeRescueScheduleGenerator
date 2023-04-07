@@ -1,6 +1,5 @@
 package edu.ucalgary.oop;
 
-
 /**
  * Each individual Treatment in the Treaments table is a Treatment object.
  */
@@ -10,17 +9,23 @@ public class Treatment {
     private Integer taskID;
     private int startHour;
 
-    public Treatment( Integer treatmentID, Integer animalID, Integer taskID, int startHour) {
+    @Override
+    public String toString() {
+        return "TreatmentID: " + TREATMENTID + ", AnimalID: " + animalID + ", TaskID: " + taskID + ", StartHour: "
+                + startHour;
+    }
+
+    public Treatment(Integer treatmentID, Integer animalID, Integer taskID, int startHour) {
         this.TREATMENTID = treatmentID;
         this.animalID = animalID;
         this.taskID = taskID;
         this.startHour = startHour;
 
         // relate the IDs together using the ConnectIDs class.
-        ConnectIDs.linkIDs( animalID, taskID );
+        ConnectIDs.linkIDs(animalID, taskID);
     }
 
-    public Integer getTreatmentID(){
+    public Integer getTreatmentID() {
         return this.TREATMENTID;
     }
 
