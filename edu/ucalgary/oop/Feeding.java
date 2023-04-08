@@ -1,5 +1,8 @@
 package edu.ucalgary.oop;
 
+import java.util.List;
+import java.util.Arrays;
+
 public class Feeding {
     private final int prepTime;
     private final int durationPerAnimal;
@@ -65,24 +68,24 @@ public class Feeding {
         return maxWindow;
     }
 
-    public int getFeedingHour(String activeTime) {
-        int feedingHour;
+    public List<Integer> getFeedingHours(String activeTime) {
+        List<Integer> feedingHours;
 
         switch (activeTime) {
             case "NOCTURNAL":
-                feedingHour = 20; // 8 PM
+                feedingHours = Arrays.asList(20, 21, 22); // 8 PM, 9 PM, 10 PM
                 break;
             case "DIURNAL":
-                feedingHour = 9; // 9 AM
+                feedingHours = Arrays.asList(9, 10, 11); // 9 AM, 10 AM, 11 AM
                 break;
             case "CREPUSCULAR":
-                feedingHour = 18; // 6 PM
+                feedingHours = Arrays.asList(18, 19, 20); // 6 PM, 7 PM, 8 PM
                 break;
             default:
-                feedingHour = 0; // Default value, should not be reached
+                feedingHours = Arrays.asList(0, 1, 2); // Default value, should not be reached
         }
 
-        return feedingHour;
+        return feedingHours;
     }
 
 }

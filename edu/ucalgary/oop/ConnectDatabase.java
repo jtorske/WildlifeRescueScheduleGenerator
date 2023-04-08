@@ -28,15 +28,19 @@ public class ConnectDatabase {
 
     /**
      * Creates a connection between the sql database and the program.
+     * 
+     * @return
      */
-    public void createConnection() {
+    public boolean createConnection() {
         try {
             this.dbConnect = DriverManager.getConnection(
                     "jdbc:mysql://localhost/EWR",
                     this.USER, this.PASSWORD);
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
+        return true;
     }
 
     /**

@@ -1,10 +1,15 @@
 package edu.ucalgary.oop;
 
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Comparator;
 
 public class Schedule {
     private ArrayList<ScheduledTask> tasks;
+
+    public List<ScheduledTask> getScheduledTasks() {
+        return tasks;
+    }
 
     public Schedule() {
         tasks = new ArrayList<>();
@@ -19,25 +24,26 @@ public class Schedule {
         int totalDuration = 0;
         for (ScheduledTask task : tasks) {
             if (task.getHour() == hour) {
-                totalDuration += task.getDuration(); // Assumes you have a getDuration() method in the ScheduledTask class
+                totalDuration += task.getDuration(); // Assumes you have a getDuration() method in the ScheduledTask
+                                                     // class
             }
         }
         return totalDuration;
     }
 
     public void printSchedule() {
-        System.out.println("Schedule:");
-        for (int i = 0; i < 24; i++) {
-            System.out.println("Hour " + i + ":");
-            for (ScheduledTask task : tasks) {
-                if (task.getHour() == i) {
-                    String taskDescription = task.getDescription() + " (" + task.getTaskType().toString() + ")";
-                    if (task.getTaskType() == TaskType.TREATMENT) {
-                        taskDescription += " - " + task.getAnimalNickname();
-                    }
-                    System.out.println(taskDescription);
-                }
+        tasks.sort(Comparator.comparingInt(ScheduledTask::getHour));
+
+        for (ScheduledTask task : tasks) {
+            if (task.getTaskType() == TaskType.FEEDING) {
+                System.out.printf("%02d:00 - %s - %s (%d: %s)\n", task.getHour(), task.getDescription(),
+                        task.getSpecies(),
+                        task.getAnimalCount(), task.getAnimalNickname());
+            } else {
+                System.out.printf("%02d:00 - %s (%s)\n", task.getHour(), task.getDescription(),
+                        task.getAnimalNickname());
             }
         }
     }
+
 }

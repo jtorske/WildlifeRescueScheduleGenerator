@@ -41,15 +41,24 @@ public class GUI {
     }
 
     public void generateSchedule() {
+
         ConnectDatabase connectDB = new ConnectDatabase();
         connectDB.createConnection();
-    
+
+        if (connectDB.createConnection()) {
+            String message = "Database connection successful!";
+            JOptionPane.showMessageDialog(null, message);
+        } else if (!connectDB.createConnection()) {
+            String message = "Database connection unsuccessful!";
+            JOptionPane.showMessageDialog(null, message);
+        }
+
         ArrayList<Animal> animalList = connectDB.selectAnimals();
         ArrayList<MedicalTask> taskList = connectDB.selectTasks();
         ArrayList<Treatment> treatmentList = connectDB.selectTreatments();
-    
+
         Schedule schedule = new Schedule();
-    
+
         // 1. Add all treatments to the schedule
         for (Treatment treatment : treatmentList) {
             int treatmentHour = treatment.getStartHour();
@@ -58,11 +67,11 @@ public class GUI {
                     : "Unknown treatment";
             Animal treatmentAnimal = findAnimalById(animalList, treatment.getAnimalID());
             String animalNickname = treatmentAnimal != null ? treatmentAnimal.getAnimalNickname() : "Unknown animal";
-            schedule.addTask(new ScheduledTask(treatmentHour, treatmentDescription, TaskType.TREATMENT, treatmentHour, animalNickname));
+            schedule.addTask(new ScheduledTask(treatmentHour, treatmentDescription, TaskType.TREATMENT, treatmentHour,
+                    animalNickname));
         }
-    
 
-    connectDB.close();
+        connectDB.close();
 
         // 2. Filter out orphaned animals
         ArrayList<Animal> nonOrphanedAnimals = new ArrayList<>();
@@ -71,61 +80,85 @@ public class GUI {
                 nonOrphanedAnimals.add(animal);
             }
         }
-    
-// 3. Calculate feeding times and durations
-LinkedHashMap<String, ArrayList<Animal>> speciesAnimalsMap = new LinkedHashMap<>();
-for (Animal animal : nonOrphanedAnimals) {
-    int feedingHour = animal.getMeal().getFeedingHour(animal.getActiveTime());
-    String species = animal.getSpecies();
-    if (speciesAnimalsMap.containsKey(species)) {
-        speciesAnimalsMap.get(species).add(animal);
-    } else {
-        ArrayList<Animal> speciesAnimals = new ArrayList<>();
-        speciesAnimals.add(animal);
-        speciesAnimalsMap.put(species, speciesAnimals);
-    }
-}
 
-// 4. Add feeding tasks based on available time in each hour after treatments
-for (int hour = 0; hour < 24; hour++) {
-    for (Map.Entry<String, ArrayList<Animal>> entry : speciesAnimalsMap.entrySet()) {
-        String species = entry.getKey();
-        ArrayList<Animal> speciesAnimals = entry.getValue();
-
-        int totalFeedingDuration = 0;
-        for (Animal animal : speciesAnimals) {
-            if (animal.getMeal().getFeedingHour(animal.getActiveTime()) == hour) {
-                totalFeedingDuration += animal.getMeal().getDurationPerAnimal();
+        // 3. Calculate feeding times and durations
+        LinkedHashMap<String, ArrayList<Animal>> speciesAnimalsMap = new LinkedHashMap<>();
+        for (Animal animal : nonOrphanedAnimals) {
+            String species = animal.getSpecies();
+            if (speciesAnimalsMap.containsKey(species)) {
+                speciesAnimalsMap.get(species).add(animal);
+            } else {
+                ArrayList<Animal> speciesAnimals = new ArrayList<>();
+                speciesAnimals.add(animal);
+                speciesAnimalsMap.put(species, speciesAnimals);
             }
         }
 
-        int remainingTimeInHour = 60 - schedule.getTotalTaskDurationForHour(hour);
+        // 4. Add feeding tasks based on available time in each hour after treatments
+        for (int hour = 0; hour < 24; hour++) {
+            for (Map.Entry<String, ArrayList<Animal>> entry : speciesAnimalsMap.entrySet()) {
+                String species = entry.getKey();
+                ArrayList<Animal> speciesAnimals = entry.getValue();
 
-        if (totalFeedingDuration > 0 && remainingTimeInHour > 0) {
-            int animalsFed = 0;
-            for (Animal animal : speciesAnimals) {
-                if (animal.getMeal().getFeedingHour(animal.getActiveTime()) == hour) {
-                    int animalFeedingDuration = animal.getMeal().getDurationPerAnimal();
-                    if (animalFeedingDuration <= remainingTimeInHour) {
-                        schedule.addTask(new ScheduledTask(hour, "Feeding", TaskType.FEEDING, species, animal.getAnimalNickname(), 1, animalFeedingDuration));
-                        animalsFed++;
-                        remainingTimeInHour -= animalFeedingDuration;
-                    } else {
-                        break;
+                int totalFeedingDuration = 0;
+                for (Animal animal : speciesAnimals) {
+                    List<Integer> possibleFeedingHours = animal.getMeal().getFeedingHours(animal.getActiveTime());
+                    if (possibleFeedingHours.contains(hour)) {
+                        totalFeedingDuration += animal.getMeal().getDurationPerAnimal();
                     }
                 }
+
+                int remainingTimeInHour = 60 - schedule.getTotalTaskDurationForHour(hour);
+
+                if (totalFeedingDuration > 0 && remainingTimeInHour > 0) {
+                    int animalsFed = 0;
+                    for (Animal animal : speciesAnimals) {
+                        List<Integer> possibleFeedingHours = animal.getMeal().getFeedingHours(animal.getActiveTime());
+                        if (possibleFeedingHours.contains(hour)) {
+                            int animalFeedingDuration = animal.getMeal().getDurationPerAnimal();
+                            if (animalFeedingDuration <= remainingTimeInHour) {
+                                schedule.addTask(new ScheduledTask(hour, "Feeding", TaskType.FEEDING, species,
+                                        animal.getAnimalNickname(), 1, animalFeedingDuration));
+                                animalsFed++;
+                                remainingTimeInHour -= animalFeedingDuration;
+                            } else {
+                                break;
+                            }
+                        }
+                    }
+                    speciesAnimals.subList(0, animalsFed).clear();
+                }
             }
-            speciesAnimals.subList(0, animalsFed).clear();
         }
-    }
-}
 
         // 5. Schedule cage cleaning once a day
         // ... (your existing code for cage cleaning)
-    
+
         // Call printSchedule() after adding all tasks to the schedule
+
+        // 6. Print unscheduled feedings
+        StringBuilder unscheduledFeedings = new StringBuilder();
+        for (Map.Entry<String, ArrayList<Animal>> entry : speciesAnimalsMap.entrySet()) {
+            String species = entry.getKey();
+            ArrayList<Animal> speciesAnimals = entry.getValue();
+
+            if (!speciesAnimals.isEmpty()) {
+                unscheduledFeedings.append("Unscheduled feedings for ").append(species).append(":\n");
+                for (Animal animal : speciesAnimals) {
+                    unscheduledFeedings.append(" - ").append(animal.getAnimalNickname()).append("\n");
+                }
+            }
+        }
+
+        if (unscheduledFeedings.length() > 0) {
+            System.out.println("\nUnscheduled feedings:");
+            System.out.println(unscheduledFeedings.toString());
+        } else {
+            System.out.println("\nAll feedings have been scheduled.");
+        }
+
         schedule.printSchedule();
-    
+
         connectDB.close();
     }
 
