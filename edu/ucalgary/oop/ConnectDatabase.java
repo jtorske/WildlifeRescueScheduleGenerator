@@ -17,8 +17,8 @@ import java.util.*;
  */
 public class ConnectDatabase {
 
-    final private String USER = "oop";
-    final private String PASSWORD = "password";
+    final private String USER = "root";
+    final private String PASSWORD = "Tourgelis1";
     private Connection dbConnect;
     private ResultSet results;
 
