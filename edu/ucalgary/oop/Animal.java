@@ -76,6 +76,20 @@ public class Animal {
     }
 
     /**
+     * Gets the cage cleaning duration for the animal species.
+     * 
+     * @param species the species of the animal.
+     * @return the duration in minutes for cleaning the cage of the species.
+     */
+    public int getCageCleaningDuration(String species) {
+        if (species.equalsIgnoreCase("porcupine")) {
+            return 10;
+        } else {
+            return 5;
+        }
+    }
+
+    /**
      * Sets whether or not the animal is orphaned.
      * 
      * @param bool true if animal should be orphaned, false if animal should not be

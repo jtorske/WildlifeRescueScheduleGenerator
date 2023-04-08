@@ -100,37 +100,65 @@ public class GUI {
                 String species = entry.getKey();
                 ArrayList<Animal> speciesAnimals = entry.getValue();
 
-                int totalFeedingDuration = 0;
+                HashMap<Integer, ArrayList<Animal>> hourAnimalMap = new HashMap<>();
                 for (Animal animal : speciesAnimals) {
                     List<Integer> possibleFeedingHours = animal.getMeal().getFeedingHours(animal.getActiveTime());
                     if (possibleFeedingHours.contains(hour)) {
-                        totalFeedingDuration += animal.getMeal().getDurationPerAnimal();
+                        if (hourAnimalMap.containsKey(hour)) {
+                            hourAnimalMap.get(hour).add(animal);
+                        } else {
+                            ArrayList<Animal> sameHourAnimals = new ArrayList<>();
+                            sameHourAnimals.add(animal);
+                            hourAnimalMap.put(hour, sameHourAnimals);
+                        }
                     }
                 }
 
-                int remainingTimeInHour = 60 - schedule.getTotalTaskDurationForHour(hour);
+                for (Map.Entry<Integer, ArrayList<Animal>> hourEntry : hourAnimalMap.entrySet()) {
+                    int feedingHour = hourEntry.getKey();
+                    ArrayList<Animal> sameHourAnimals = hourEntry.getValue();
+                    int totalFeedingDuration = sameHourAnimals.size()
+                            * sameHourAnimals.get(0).getMeal().getDurationPerAnimal();
 
-                if (totalFeedingDuration > 0 && remainingTimeInHour > 0) {
-                    int animalsFed = 0;
-                    for (Animal animal : speciesAnimals) {
-                        List<Integer> possibleFeedingHours = animal.getMeal().getFeedingHours(animal.getActiveTime());
-                        if (possibleFeedingHours.contains(hour)) {
-                            int animalFeedingDuration = animal.getMeal().getDurationPerAnimal();
-                            if (animalFeedingDuration <= remainingTimeInHour) {
-                                schedule.addTask(new ScheduledTask(hour, "Feeding", TaskType.FEEDING, species,
-                                        animal.getAnimalNickname(), 1, animalFeedingDuration));
-                                animalsFed++;
-                                remainingTimeInHour -= animalFeedingDuration;
-                            } else {
-                                break;
+                    int remainingTimeInHour = 60 - schedule.getTotalTaskDurationForHour(feedingHour);
+
+                    if (totalFeedingDuration > 0 && remainingTimeInHour > 0) {
+                        if (totalFeedingDuration <= remainingTimeInHour) {
+                            StringBuilder animalNicknames = new StringBuilder();
+                            for (Animal animal : sameHourAnimals) {
+                                animalNicknames.append(animal.getAnimalNickname()).append(", ");
+                            }
+                            // Remove the trailing comma and space
+                            animalNicknames.setLength(animalNicknames.length() - 2);
+
+                            schedule.addTask(new ScheduledTask(feedingHour, "Feeding", TaskType.FEEDING, species,
+                                    animalNicknames.toString(), sameHourAnimals.size(), totalFeedingDuration));
+                            speciesAnimals.removeAll(sameHourAnimals);
+                        } else {
+                            // Find the maximum number of animals that can be fed within the remaining time
+                            int maxAnimalsToFeed = remainingTimeInHour
+                                    / sameHourAnimals.get(0).getMeal().getDurationPerAnimal();
+
+                            if (maxAnimalsToFeed > 0) {
+                                StringBuilder animalNicknames = new StringBuilder();
+                                for (int i = 0; i < maxAnimalsToFeed; i++) {
+                                    Animal animal = sameHourAnimals.get(i);
+                                    animalNicknames.append(animal.getAnimalNickname()).append(", ");
+                                    speciesAnimals.remove(animal);
+                                }
+                                // Remove the trailing comma and space
+                                animalNicknames.setLength(animalNicknames.length() - 2);
+
+                                int adjustedFeedingDuration = maxAnimalsToFeed
+                                        * sameHourAnimals.get(0).getMeal().getDurationPerAnimal();
+                                schedule.addTask(new ScheduledTask(feedingHour, "Feeding", TaskType.FEEDING, species,
+                                        animalNicknames.toString(), maxAnimalsToFeed, adjustedFeedingDuration));
                             }
                         }
                     }
-                    speciesAnimals.subList(0, animalsFed).clear();
                 }
             }
         }
-
         // 5. Schedule cage cleaning once a day
         // ... (your existing code for cage cleaning)
 
