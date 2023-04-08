@@ -6,7 +6,8 @@ import static org.junit.Assert.*;
 public class TestClass {
     private Animal animal1 = new Animal(1, "Fido", "dog");
     private Animal animal2 = new Animal(2, "Joe, Bambi", "dog");
-
+    private Animal animal3 = new Animal(3, "ALEX", "porcupine");
+    private Animal animal4 = new Animal(4, "ALEX", "coyote");
     @Test
     public void testAnimalConstructor() {
         assertEquals(1, animal1.getAnimalID().intValue());
@@ -29,20 +30,15 @@ public class TestClass {
         assertNull(animal1.getMeal());
     }
 
+
     @Test
-    public void testCageConstructor() {
-        Cage cage = new Cage(1, "raccoon");
-        assertEquals(1, cage.getCageID().intValue());
-        assertEquals("raccoon", cage.getSpecies());
-        assertEquals(5, cage.getCleaningTime());
+    public void testCageCleaningTimeForCoyote() {
+        assertEquals(5, animal4.getCageCleaningDuration(animal4.getSpecies()));
     }
 
     @Test
     public void testCageCleaningTimeForPorcupine() {
-        Cage cage = new Cage(2, "porcupine");
-        assertEquals(2, cage.getCageID().intValue());
-        assertEquals("porcupine", cage.getSpecies());
-        assertEquals(10, cage.getCleaningTime());
+        assertEquals(10, animal3.getCageCleaningDuration(animal3.getSpecies()));
     }
 
     @Test
