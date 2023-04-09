@@ -1,12 +1,15 @@
 package edu.ucalgary.oop;
 
 import javax.swing.*;
+import java.util.Iterator;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.List;
@@ -159,8 +162,45 @@ public class GUI {
                 }
             }
         }
-        // 5. Schedule cage cleaning once a day
-        // ... (your existing code for cage cleaning)
+        // 5. Schedule cage cleaning with the most available time in each hour
+        HashMap<Integer, Integer> availableTimeMap = new HashMap<>();
+        for (int hour = 0; hour < 24; hour++) {
+            availableTimeMap.put(hour, 60);
+        }
+        for (ScheduledTask task : schedule.getScheduledTasks()) {
+            int hour = task.getHour();
+            int duration = task.getDuration();
+            availableTimeMap.put(hour, availableTimeMap.get(hour) - duration);
+        }
+        for (Animal animal : nonOrphanedAnimals) {
+            int animalId = animal.getAnimalID();
+            int cleaningDuration = animal.getCageCleaningDuration(animal.getSpecies());
+            String animalNickname = animal.getAnimalNickname();
+
+            while (cleaningDuration > 0) {
+                int maxAvailableTime = 0;
+                int targetHour = -1;
+                for (Map.Entry<Integer, Integer> entry : availableTimeMap.entrySet()) {
+                    int hour = entry.getKey();
+                    int availableTime = entry.getValue();
+                    if (availableTime > maxAvailableTime) {
+                        maxAvailableTime = availableTime;
+                        targetHour = hour;
+                    }
+                }
+
+                if (targetHour == -1) {
+                    // No more available time in any hour, break out of loop
+                    break;
+                }
+
+                int cleaningToAdd = Math.min(cleaningDuration, maxAvailableTime);
+                schedule.addTask(new ScheduledTask(targetHour, "Cage cleaning", TaskType.CLEANING, animalNickname,
+                        cleaningToAdd));
+                cleaningDuration -= cleaningToAdd;
+                availableTimeMap.put(targetHour, availableTimeMap.get(targetHour) - cleaningToAdd);
+            }
+        }
 
         // Call printSchedule() after adding all tasks to the schedule
 
