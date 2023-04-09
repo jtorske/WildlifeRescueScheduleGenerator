@@ -7,6 +7,7 @@ public class ScheduledTask {
     private String animalNickname;
     private String species;
     private int animalCount;
+    private boolean backupVolunteer;
 
     private int duration; // Add a duration field to store task duration
 
@@ -35,6 +36,16 @@ public class ScheduledTask {
         this.type = taskType;
         this.animalNickname = animalNickname;
         this.duration = duration;
+        this.backupVolunteer = false;
+
+    }
+
+    public boolean isBackupVolunteer() {
+        return backupVolunteer;
+    }
+
+    public void setBackupVolunteer(boolean backupVolunteer) {
+        this.backupVolunteer = backupVolunteer;
     }
 
     public ScheduledTask(int hour, String description, TaskType taskType, int duration, String animalNickname) {

@@ -3,6 +3,8 @@ package edu.ucalgary.oop;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class Schedule {
     private ArrayList<ScheduledTask> tasks;
@@ -51,6 +53,12 @@ public class Schedule {
     }
 
     public void printSchedule() {
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMMM d, yyyy");
+        LocalDate currentDate = LocalDate.now();
+        String currentDateFormatted = currentDate.format(dateFormatter);
+
+        System.out.printf("Schedule for: %s\n", currentDateFormatted);
+        System.out.println("--------------------------------------------------");
         tasks.sort(Comparator.comparingInt(ScheduledTask::getHour));
 
         for (ScheduledTask task : tasks) {
@@ -64,5 +72,4 @@ public class Schedule {
             }
         }
     }
-
 }

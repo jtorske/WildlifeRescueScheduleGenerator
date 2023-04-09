@@ -1,22 +1,18 @@
 package edu.ucalgary.oop;
 
 import javax.swing.*;
-import java.util.Iterator;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.List;
 
 public class GUI {
     private JFrame frame;
-    private JButton animalsButton, tasksButton, treatmentsButton;
+    private JButton displayScheduleButton, manualTaskReadjustmentButton;
     private JTextArea textArea;
     private JScrollPane scrollPane;
     private ConnectDatabase connectDatabase;
@@ -34,13 +30,17 @@ public class GUI {
         });
     }
 
-    private MedicalTask findTaskById(ArrayList<MedicalTask> tasks, Integer taskId) {
-        for (MedicalTask task : tasks) {
+    private MedicalTask findTaskById(List<MedicalTask> taskList, Integer taskId) {
+        for (MedicalTask task : taskList) {
             if (task.getTaskID().equals(taskId)) {
                 return task;
             }
         }
         return null;
+    }
+
+    private void showPopup(String title, String message) {
+        JOptionPane.showMessageDialog(frame, message, title, JOptionPane.INFORMATION_MESSAGE);
     }
 
     public void generateSchedule() {
@@ -79,7 +79,9 @@ public class GUI {
                         new ScheduledTask(availableHour, treatmentDescription, TaskType.TREATMENT, animalNickname,
                                 associatedTask.getDuration())); // Pass the correct duration here
             } else {
-                System.out.println("Manual readjustment needed for treatment task: " + treatmentDescription);
+                promptManualReadjustment(treatmentDescription, treatment.getTaskID(), treatmentHour, schedule,
+                        animalList, treatment, taskList);
+
             }
         }
 
@@ -255,6 +257,87 @@ public class GUI {
         return null;
     }
 
+    private void promptManualReadjustment(String treatmentDescription, int taskId, int initialHour, Schedule schedule,
+            ArrayList<Animal> animalList, Treatment treatment, List<MedicalTask> taskList) {
+        JFrame manualAdjustmentFrame = new JFrame("Manual Readjustment");
+        manualAdjustmentFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        manualAdjustmentFrame.setSize(600, 150);
+        manualAdjustmentFrame.setLayout(new FlowLayout());
+
+        JLabel label = new JLabel("Manual readjustment needed for treatment task: " + treatmentDescription);
+        manualAdjustmentFrame.add(label);
+
+        JButton backupVolunteerButton = new JButton("Use Backup Volunteer");
+        JButton shiftTreatmentButton = new JButton("Shift Treatment");
+        manualAdjustmentFrame.add(backupVolunteerButton);
+        manualAdjustmentFrame.add(shiftTreatmentButton);
+
+        backupVolunteerButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // Fetch the associated animal
+                Animal associatedAnimal = findAnimalById(animalList, treatment.getAnimalID());
+                String animalNickname = associatedAnimal != null ? associatedAnimal.getAnimalNickname()
+                        : "Unknown animal";
+
+                // Add the task to the schedule with a note about using a backup volunteer
+                ScheduledTask newTask = new ScheduledTask(initialHour, treatmentDescription + " [+ backup volunteer]",
+                        TaskType.TREATMENT, animalNickname, 60 - schedule.getTotalTaskDurationForHour(initialHour));
+                newTask.setBackupVolunteer(true);
+                schedule.addTask(newTask);
+
+                // Print the schedule with the newly added task
+                schedule.printSchedule();
+
+                manualAdjustmentFrame.dispose();
+            }
+        });
+
+        shiftTreatmentButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JFrame hourSelectionFrame = new JFrame("Shift Treatment");
+                hourSelectionFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                hourSelectionFrame.setSize(600, 300);
+
+                JPanel hourSelectionPanel = new JPanel();
+                hourSelectionPanel.setLayout(new GridLayout(0, 3));
+
+                JLabel titleLabel = new JLabel("Select an hour to place the task:", JLabel.CENTER);
+                hourSelectionPanel.add(titleLabel);
+                hourSelectionPanel.add(new JLabel(""));
+
+                // Fetch the associated task to get its duration
+                MedicalTask associatedTask = findTaskById(taskList, treatment.getTaskID());
+                int taskDuration = associatedTask != null ? associatedTask.getDuration() : 0;
+                for (int hour = 0; hour < 24; hour++) {
+                    int availableTime = 60 - schedule.getTotalTaskDurationForHour(hour);
+                    if (availableTime >= taskDuration) {
+                        JButton hourButton = new JButton("Hour " + hour);
+                        final int selectedHour = hour; // Create a new effectively final variable
+                        hourButton.addActionListener(new ActionListener() {
+                            public void actionPerformed(ActionEvent e) {
+                                Animal associatedAnimal = findAnimalById(animalList, treatment.getAnimalID());
+                                String animalNickname = associatedAnimal != null ? associatedAnimal.getAnimalNickname()
+                                        : "Unknown animal";
+                                schedule.addTask(
+                                        new ScheduledTask(selectedHour, treatmentDescription, TaskType.TREATMENT,
+                                                animalNickname, taskDuration));
+                                schedule.printSchedule();
+                                hourSelectionFrame.dispose();
+                            }
+                        });
+                        hourSelectionPanel.add(hourButton);
+                    }
+                }
+
+                hourSelectionFrame.add(hourSelectionPanel);
+                hourSelectionFrame.setVisible(true);
+                manualAdjustmentFrame.dispose();
+            }
+        });
+
+        manualAdjustmentFrame.setVisible(true);
+    }
+
     private int findAvailableHourForTreatment(Schedule schedule, int initialHour, int maxWindow, int taskDuration) {
         for (int window = 0; window < maxWindow; window++) {
             int targetHour = initialHour + window;
@@ -269,34 +352,25 @@ public class GUI {
 
     private void initialize() {
         frame = new JFrame("Database GUI");
-        frame.setBounds(100, 100, 500, 100);
+        frame.setBounds(100, 100, 200, 100);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(null);
 
         connectDatabase = new ConnectDatabase();
         connectDatabase.createConnection();
 
-        JButton displayScheduleButton = new JButton("Display Schedule");
+        displayScheduleButton = new JButton("Display Schedule");
         displayScheduleButton.setBounds(20, 20, 150, 25);
         frame.getContentPane().add(displayScheduleButton);
-
-        JButton manualTaskReadjustmentButton = new JButton("Manual Task Readjustment (WIP)");
-        manualTaskReadjustmentButton.setBounds(220, 20, 250, 25);
-        frame.getContentPane().add(manualTaskReadjustmentButton);
 
         displayScheduleButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // Generate the schedule and display it in the text area.
                 generateSchedule();
+
             }
         });
 
-        // Add action listener for the manual task readjustment button (WIP)
-        manualTaskReadjustmentButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // TODO: Implement manual task readjustment functionality
-            }
-        });
     }
 
     public GUI() {
