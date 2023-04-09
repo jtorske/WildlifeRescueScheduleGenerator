@@ -18,7 +18,8 @@ public class ScheduledTask {
         this.duration = duration;
     }
 
-    public ScheduledTask(int hour, String description, TaskType taskType, String species, String animalNickname, int animalCount, int duration) {
+    public ScheduledTask(int hour, String description, TaskType taskType, String species, String animalNickname,
+            int animalCount, int duration) {
         this.hour = hour;
         this.description = description;
         this.type = taskType;
@@ -27,6 +28,7 @@ public class ScheduledTask {
         this.animalCount = animalCount;
         this.duration = duration;
     }
+
     public ScheduledTask(int hour, String description, TaskType taskType, String animalNickname, int duration) {
         this.hour = hour;
         this.description = description;
@@ -34,6 +36,7 @@ public class ScheduledTask {
         this.animalNickname = animalNickname;
         this.duration = duration;
     }
+
     public ScheduledTask(int hour, String description, TaskType taskType, int duration, String animalNickname) {
         this.hour = hour;
         this.description = description;
@@ -41,6 +44,7 @@ public class ScheduledTask {
         this.duration = duration;
         this.animalNickname = animalNickname;
     }
+
     public String getSpecies() {
         return species;
     }

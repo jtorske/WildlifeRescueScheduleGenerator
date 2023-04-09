@@ -31,17 +31,36 @@ public class Schedule {
         return totalDuration;
     }
 
+    public boolean containsFeedingForAnimal(String animalNickname) {
+        for (ScheduledTask task : tasks) {
+            if (task.getTaskType() == TaskType.FEEDING && task.getAnimalNickname().contains(animalNickname)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public int getNumberOfFeedingsForSpeciesAndHour(String species, int hour) {
+        int count = 0;
+        for (ScheduledTask task : tasks) {
+            if (task.getTaskType() == TaskType.FEEDING && task.getSpecies().equals(species) && task.getHour() == hour) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     public void printSchedule() {
         tasks.sort(Comparator.comparingInt(ScheduledTask::getHour));
 
         for (ScheduledTask task : tasks) {
             if (task.getTaskType() == TaskType.FEEDING) {
-                System.out.printf("%02d:00 - %s - %s (%d: %s)\n", task.getHour(), task.getDescription(),
+                System.out.printf("%02d:00 - %s - %s (%d: %s): %d\n", task.getHour(), task.getDescription(),
                         task.getSpecies(),
-                        task.getAnimalCount(), task.getAnimalNickname());
+                        task.getAnimalCount(), task.getAnimalNickname(), task.getDuration());
             } else {
-                System.out.printf("%02d:00 - %s (%s)\n", task.getHour(), task.getDescription(),
-                        task.getAnimalNickname());
+                System.out.printf("%02d:00 - %s (%s): %d\n", task.getHour(), task.getDescription(),
+                        task.getAnimalNickname(), task.getDuration());
             }
         }
     }

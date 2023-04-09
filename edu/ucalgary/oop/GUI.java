@@ -70,8 +70,17 @@ public class GUI {
                     : "Unknown treatment";
             Animal treatmentAnimal = findAnimalById(animalList, treatment.getAnimalID());
             String animalNickname = treatmentAnimal != null ? treatmentAnimal.getAnimalNickname() : "Unknown animal";
-            schedule.addTask(new ScheduledTask(treatmentHour, treatmentDescription, TaskType.TREATMENT, treatmentHour,
-                    animalNickname));
+
+            int availableHour = findAvailableHourForTreatment(schedule, treatmentHour, associatedTask.getMaxWindow(),
+                    associatedTask.getDuration());
+
+            if (availableHour >= 0) {
+                schedule.addTask(
+                        new ScheduledTask(availableHour, treatmentDescription, TaskType.TREATMENT, animalNickname,
+                                associatedTask.getDuration())); // Pass the correct duration here
+            } else {
+                System.out.println("Manual readjustment needed for treatment task: " + treatmentDescription);
+            }
         }
 
         connectDB.close();
@@ -106,7 +115,9 @@ public class GUI {
                 HashMap<Integer, ArrayList<Animal>> hourAnimalMap = new HashMap<>();
                 for (Animal animal : speciesAnimals) {
                     List<Integer> possibleFeedingHours = animal.getMeal().getFeedingHours(animal.getActiveTime());
-                    if (possibleFeedingHours.contains(hour)) {
+                    boolean hasNotBeenFed = !schedule.containsFeedingForAnimal(animal.getAnimalNickname());
+                    if (hasNotBeenFed && possibleFeedingHours.contains(hour)) {
+
                         if (hourAnimalMap.containsKey(hour)) {
                             hourAnimalMap.get(hour).add(animal);
                         } else {
@@ -120,12 +131,15 @@ public class GUI {
                 for (Map.Entry<Integer, ArrayList<Animal>> hourEntry : hourAnimalMap.entrySet()) {
                     int feedingHour = hourEntry.getKey();
                     ArrayList<Animal> sameHourAnimals = hourEntry.getValue();
-                    int totalFeedingDuration = sameHourAnimals.size()
-                            * sameHourAnimals.get(0).getMeal().getDurationPerAnimal();
 
+                    int totalFeedingDuration = (sameHourAnimals.size()
+                            * sameHourAnimals.get(0).getMeal().getDurationPerAnimal())
+                            + sameHourAnimals.get(0).getMeal().getPrepTime();
                     int remainingTimeInHour = 60 - schedule.getTotalTaskDurationForHour(feedingHour);
 
                     if (totalFeedingDuration > 0 && remainingTimeInHour > 0) {
+                        int prepTime = sameHourAnimals.get(0).getMeal().getPrepTime();
+                        totalFeedingDuration += prepTime;
                         if (totalFeedingDuration <= remainingTimeInHour) {
                             StringBuilder animalNicknames = new StringBuilder();
                             for (Animal animal : sameHourAnimals) {
@@ -152,8 +166,10 @@ public class GUI {
                                 // Remove the trailing comma and space
                                 animalNicknames.setLength(animalNicknames.length() - 2);
 
-                                int adjustedFeedingDuration = maxAnimalsToFeed
-                                        * sameHourAnimals.get(0).getMeal().getDurationPerAnimal();
+                                int adjustedFeedingDuration = (maxAnimalsToFeed
+                                        * sameHourAnimals.get(0).getMeal().getDurationPerAnimal())
+                                        + sameHourAnimals.get(0).getMeal().getPrepTime(); // Correct calculation for
+                                                                                          // adjustedFeedingDuration
                                 schedule.addTask(new ScheduledTask(feedingHour, "Feeding", TaskType.FEEDING, species,
                                         animalNicknames.toString(), maxAnimalsToFeed, adjustedFeedingDuration));
                             }
@@ -239,66 +255,51 @@ public class GUI {
         return null;
     }
 
+    private int findAvailableHourForTreatment(Schedule schedule, int initialHour, int maxWindow, int taskDuration) {
+        for (int window = 0; window < maxWindow; window++) {
+            int targetHour = initialHour + window;
+            int remainingTimeInHour = 60 - schedule.getTotalTaskDurationForHour(targetHour);
+
+            if (taskDuration <= remainingTimeInHour) {
+                return targetHour;
+            }
+        }
+        return -1;
+    }
+
     private void initialize() {
         frame = new JFrame("Database GUI");
-        frame.setBounds(100, 100, 600, 400);
+        frame.setBounds(100, 100, 500, 100);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(null);
 
         connectDatabase = new ConnectDatabase();
         connectDatabase.createConnection();
 
-        animalsButton = new JButton("Show Animals");
-        animalsButton.setBounds(20, 20, 150, 25);
-        frame.getContentPane().add(animalsButton);
+        JButton displayScheduleButton = new JButton("Display Schedule");
+        displayScheduleButton.setBounds(20, 20, 150, 25);
+        frame.getContentPane().add(displayScheduleButton);
 
-        tasksButton = new JButton("Show Tasks");
-        tasksButton.setBounds(220, 20, 150, 25);
-        frame.getContentPane().add(tasksButton);
+        JButton manualTaskReadjustmentButton = new JButton("Manual Task Readjustment (WIP)");
+        manualTaskReadjustmentButton.setBounds(220, 20, 250, 25);
+        frame.getContentPane().add(manualTaskReadjustmentButton);
 
-        treatmentsButton = new JButton("Show Treatments");
-        treatmentsButton.setBounds(420, 20, 150, 25);
-        frame.getContentPane().add(treatmentsButton);
-
-        textArea = new JTextArea();
-        textArea.setEditable(false);
-        scrollPane = new JScrollPane(textArea);
-        scrollPane.setBounds(20, 60, 550, 280);
-        frame.getContentPane().add(scrollPane);
-
-        animalsButton.addActionListener(new ActionListener() {
+        displayScheduleButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                ArrayList<Animal> animals = connectDatabase.selectAnimals();
-                textArea.setText("Animals:\n");
-                for (Animal animal : animals) {
-                    textArea.append(animal.toString() + "\n");
-                }
+                // Generate the schedule and display it in the text area.
+                generateSchedule();
             }
         });
 
-        tasksButton.addActionListener(new ActionListener() {
+        // Add action listener for the manual task readjustment button (WIP)
+        manualTaskReadjustmentButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                ArrayList<MedicalTask> tasks = connectDatabase.selectTasks();
-                textArea.setText("Tasks:\n");
-                for (MedicalTask task : tasks) {
-                    textArea.append(task.toString() + "\n");
-                }
-            }
-        });
-
-        treatmentsButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                ArrayList<Treatment> treatments = connectDatabase.selectTreatments();
-                textArea.setText("Treatments:\n");
-                for (Treatment treatment : treatments) {
-                    textArea.append(treatment.toString() + "\n");
-                }
+                // TODO: Implement manual task readjustment functionality
             }
         });
     }
 
     public GUI() {
         initialize();
-        generateSchedule();
     }
 }
