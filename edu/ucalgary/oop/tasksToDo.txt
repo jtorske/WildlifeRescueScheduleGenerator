@@ -12,6 +12,7 @@ Here is a note area to remind each other what is missing in the project:
 3. Modify main class
 
 4. GUI:
-    WIP still    
+    Cage cleaning is in! Schedule is all there, except minor bugs causing some hours to exceed slightly. 
+    Need to fix that and figure out backup volunteers/manual readjustment of tasks.
 
 5. put the junit files in lib folder. the two files for testing.
