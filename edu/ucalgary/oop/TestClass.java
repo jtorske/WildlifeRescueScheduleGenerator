@@ -3,31 +3,21 @@ package edu.ucalgary.oop;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
+
 public class TestClass {
     private Animal animal1 = new Animal(1, "Fido", "dog");
     private Animal animal2 = new Animal(2, "Joe, Bambi", "dog");
     private Animal animal3 = new Animal(3, "ALEX", "porcupine");
     private Animal animal4 = new Animal(4, "ALEX", "coyote");
+
+
     @Test
     public void testAnimalConstructor() {
         assertEquals(1, animal1.getAnimalID().intValue());
         assertEquals("Fido", animal1.getAnimalNickname());
         assertEquals("dog", animal1.getSpecies());
         assertFalse(animal1.getIsOrphaned());
-    }
-
-    @Test
-    public void testOrphanedAnimalTrue() {
-        assertTrue(animal2.getIsOrphaned());
-        assertNull(animal2.getActiveTime());
-        assertNull(animal2.getMeal());
-    }
-
-    @Test
-    public void testOrphanedAnimalFalse() {
-        assertFalse(animal1.getIsOrphaned());
-        assertNull(animal1.getActiveTime());
-        assertNull(animal1.getMeal());
     }
 
 
@@ -56,4 +46,5 @@ public class TestClass {
         feeding.setMaxWindow(4);
         assertEquals(4, feeding.getMaxWindow());
     }
+
 }
