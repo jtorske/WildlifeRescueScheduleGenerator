@@ -116,12 +116,12 @@ public class Schedule {
 
         for (ScheduledTask task : tasks) {
             if (task.getTaskType() == TaskType.FEEDING) {
-                System.out.printf("%02d:00 - %s - %s (%d: %s): %d\n", task.getHour(), task.getDescription(),
+                System.out.printf("%02d:00 - %s - %s (%d: %s)\n", task.getHour(), task.getDescription(),
                         task.getSpecies(),
-                        task.getAnimalCount(), task.getAnimalNickname(), task.getDuration());
+                        task.getAnimalCount(), task.getAnimalNickname());
             } else {
-                System.out.printf("%02d:00 - %s (%s): %d\n", task.getHour(), task.getDescription(),
-                        task.getAnimalNickname(), task.getDuration());
+                System.out.printf("%02d:00 - %s (%s)\n", task.getHour(), task.getDescription(),
+                        task.getAnimalNickname());
             }
         }
 
@@ -133,12 +133,12 @@ public class Schedule {
 
             for (ScheduledTask task : tasks) {
                 if (task.getTaskType() == TaskType.FEEDING) {
-                    writer.printf("%02d:00 - %s - %s (%d: %s): %d\n", task.getHour(), task.getDescription(),
+                    writer.printf("%02d:00 - %s - %s (%d: %s)\n", task.getHour(), task.getDescription(),
                             task.getSpecies(),
-                            task.getAnimalCount(), task.getAnimalNickname(), task.getDuration());
+                            task.getAnimalCount(), task.getAnimalNickname());
                 } else {
-                    writer.printf("%02d:00 - %s (%s): %d\n", task.getHour(), task.getDescription(),
-                            task.getAnimalNickname(), task.getDuration());
+                    writer.printf("%02d:00 - %s (%s)\n", task.getHour(), task.getDescription(),
+                            task.getAnimalNickname());
                 }
             }
             writer.close();
