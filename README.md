@@ -1,4 +1,10 @@
 Group members are: Hiu Sum Yuen, Bruce Gillis, Jordan Torske, Elea Bahhadi
+# Example Wildlife Rescue Schedule Generator
+
+## What to install
+WIP
+## How to use
+WIP
 ## Classes
 ### Animal
 This class represents an Animal object with attributes like animal ID, species, orphan status, active time, nickname, and a Feeding object. The class provides a constructor, toString method, and getter methods for each attribute.
