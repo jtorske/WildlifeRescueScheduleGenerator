@@ -16,6 +16,18 @@ public class Treatment {
     }
 
     public Treatment(Integer treatmentID, Integer animalID, Integer taskID, int startHour) {
+        if (treatmentID == null || treatmentID < 1) {
+            throw new IllegalArgumentException("Treatment ID must be a positive integer.");
+        }
+        if (animalID == null || animalID < 1) {
+            throw new IllegalArgumentException("Animal ID must be a positive integer.");
+        }
+        if (taskID == null || taskID < 1) {
+            throw new IllegalArgumentException("Task ID must be a positive integer.");
+        }
+        if (startHour < 0 || startHour > 23) {
+            throw new IllegalArgumentException("Start hour must be between 0 and 23.");
+        }
         this.TREATMENTID = treatmentID;
         this.animalID = animalID;
         this.taskID = taskID;

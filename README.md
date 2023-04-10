@@ -1,44 +1,95 @@
-*WIP
-
 Group members are: Hiu Sum Yuen, Bruce Gillis, Jordan Torske, Elea Bahhadi
-# Example Wildlife Rescue Schedule Builder
-This project provides a program to generate a daily list of tasks for volunteers to complete in order to support the animals in residence at a wildlife rescue facility.
-
-## Instructions/Installations
-Download and install Java JDK 8 or higher.
-Download the source code from the project repository.
-Install any necessary dependencies.
-Run the Main class to generate a daily list of tasks for the volunteers.
-Input the date for which the schedule is to be generated.
-The output will be displayed in the console. *WIP
-
 ## Classes
-### Animal.java
-This class represents an animal in the wildlife rescue facility. It has attributes such as animal ID, species, nickname, active time, orphan status, and feeding requirements. The class provides methods to get and set these attributes.
-
-### ActiveTimes.java
-This class is an enumeration that represents the active times of the animals. The possible values are NOCTURNAL, DIURNAL, and CREPUSCULAR.
-
-### ConnectIDs.java
-This class serves as a connector between the Animal class and the MedicalTask class, allowing connections in the Treatment class. It contains HashMaps that store the relationships between animal IDs, task IDs, and their respective objects.
-
-### Cage.java
-This class is responsible for representing a cage for a specific animal species in the wildlife rescue. It holds important information about the cage, such as the cage ID, the animal species residing in the cage, and the cleaning time required for the cage.
-
-### HashMaps
-This class contains HashMaps that store the relationships between animal IDs, task IDs, and their respective objects. It helps manage the connections between different classes in the project.
-
-### Feeding.java
-This class represents the feeding requirements for an animal. It has attributes such as prep time, duration per animal, number of animals, and max window. The class provides methods to get and set these attributes.
-
-### InvalidScheduleException.java
-This class is a custom exception that is thrown when a schedule cannot be built with the given time requirements.
-
-### MedicalTask.java
-This class represents a medical task to be performed on an animal. It has attributes such as task ID, description, duration, and max window. The class provides methods to get and set these attributes.
-
-### Treatment.java
-This class represents an individual treatment in the treatment table. It has attributes such as animal ID, task ID, and start hour. The class provides methods to get these attributes and links the IDs using the ConnectIDs class.
-
-### GUI.java
-This class creates the GUI that is going to be used to connect to the sql and create the schedule.
+### Animal
+This class represents an Animal object with attributes like animal ID, species, orphan status, active time, nickname, and a Feeding object. The class provides a constructor, toString method, and getter methods for each attribute.
+### ConnectDatabase
+This class is responsible for connecting to a MySQL database, executing queries, and managing the results. It provides methods for connecting to the database, closing the connection, selecting animal, medical task, and treatment records, and inserting and deleting tasks. It also contains a method to get the results of the executed queries.
+### Feeding
+This class represents a Feeding object with attributes like preparation time, duration per animal, number of animals, and maximum feeding window. The class provides a constructor, setter methods for max window, and getter methods for each attribute. It also contains a method called getFeedingHours that returns a list of feeding hours based on the active time of an animal.
+### Schedule
+Thiss class represents a day's schedule of tasks for an animal clinic. It contains a list of ScheduledTask objects and provides methods to add tasks, calculate total task durations for specific hours, and check if the schedule contains a feeding task for a particular animal.
+### ScheduleTask 
+This class represents a task in the animal clinic's schedule. It contains details about the scheduled task, such as the hour, description, task type, and duration. In addition, it provides information about the animal(s) associated with the task, such as the species, nickname, and number of animals involved.
+### Treatment
+This class represents an individual treatment in the Treatments table. It contains the treatment ID, animal ID, task ID, and start hour. The class also relates the IDs together using the ConnectIDs class.
+### Medical Task
+This class represents a medical task to be performed in the animal clinic. This class contains the task ID, description, duration, and maximum time window for each task.
+### GUI
+This class implements User Interface as well as a sorting algorithm. It is used to construct the schedule after sorting treatments, animals and tasks are inputted through SQL. 
+## Tests
+### testAnimalConstructor 
+Tests if the Animal constructor creates an Animal object correctly and initializes its properties.
+### testCageCleaningTimeForCoyote 
+Tests if the correct cage cleaning time is returned for a coyote.
+### testCageCleaningTimeForPorcupine
+Tests if the correct cage cleaning time is returned for a porcupine.
+### testFeedingConstructor 
+Tests if the Feeding constructor creates a Feeding object correctly and initializes its properties.
+### testSetMaxWindow
+Tests if the max window can be set correctly for a Feeding object.
+### testMedicalTaskConstructor
+Tests if the MedicalTask constructor creates a MedicalTask object correctly and initializes its properties.
+### testTreatmentConstructor
+Tests if the Treatment constructor creates a Treatment object correctly and initializes its properties.
+### testScheduledTaskConstructor
+Tests if the ScheduledTask constructor creates a ScheduledTask object correctly and initializes its properties.
+### testScheduleAddTaskAndGetScheduledTasks
+Tests if a task can be added to the schedule and the list of scheduled tasks can be retrieved.
+### testScheduleTotalTaskDurationForHour
+Tests if the total task duration for a specific hour is calculated correctly.
+### testScheduleContainsFeedingForAnimal
+Tests if the schedule correctly identifies if it contains a feeding task for a specific animal.
+### testScheduleNumberOfFeedingsForSpeciesAndHour
+Tests if the correct number of feedings for a species in a specific hour is returned.
+### testMedicalTaskSetDescription
+Tests if the description of a MedicalTask can be set correctly.
+### testMedicalTaskSetDuration
+Tests if the duration of a MedicalTask can be set correctly.
+### testScheduledTaskBackupVolunteer
+Tests if the backup volunteer flag can be set and retrieved correctly for a ScheduledTask.
+### testScheduleAddMultipleTasksAndSortByHour
+Tests if multiple tasks can be added to the schedule, and if they are sorted by hour correctly.
+### testScheduleTotalTaskDurationForMultipleHours
+Tests if the total task duration for multiple hours is calculated correctly.
+### testScheduleNumberOfFeedingsForMultipleSpeciesAndHours
+Tests if the correct number of feedings for multiple species and hours is returned.
+### testAnimalSetIsOrphaned
+Tests if the orphaned status of an animal can be set correctly.
+### testAnimalActiveTimeForCoyote
+Tests if the correct active time is returned for a coyote.
+### testAnimalActiveTimeForPorcupine
+Tests if the correct active time is returned for a porcupine.
+### testAnimalActiveTimeForOrphanedAnimal
+Tests if the correct active time is returned for an orphaned animal.
+### testAnimalMealForCoyote
+Tests if the correct meal information is returned for a coyote.
+### testAnimalMealForPorcupine
+Tests if the correct meal information is returned for a porcupine.
+### testFeedingGetFeedingHoursNocturnal
+Tests if the correct feeding hours are returned for a nocturnal animal.
+### testFeedingGetFeedingHoursDiurnal
+Tests if the correct feeding hours are returned for a diurnal animal.
+### testFeedingGetFeedingHoursCrepuscular
+Tests if the correct feeding hours are returned for a crepuscular animal.
+### testAnimalConstructorInvalidAnimalID
+Tests if an IllegalArgumentException is thrown when providing an invalid animal ID to the Animal constructor.
+### testAnimalConstructorEmptyNickname
+Tests if an IllegalArgumentException is thrown when providing an empty nickname to the Animal constructor.
+### testAnimalConstructorEmptySpecies
+Tests if an IllegalArgumentException is thrown when providing an empty species string to the Animal constructor.
+### testFeedingConstructorInvalidDuration
+Tests if an IllegalArgumentException is thrown when providing an invalid (negative) duration to the Feeding constructor.
+### testFeedingConstructorInvalidPrepTime
+Tests if an IllegalArgumentException is thrown when providing an invalid (negative) preparation time to the Feeding constructor.
+### testMedicalTaskConstructorInvalidDuration 
+Tests if an IllegalArgumentException is thrown when providing an invalid (negative) duration to the MedicalTask constructor.
+### testMedicalTaskConstructorInvalidMaxWindow
+Tests if an IllegalArgumentException is thrown when providing an invalid (negative) maximum window to the MedicalTask constructor.
+### testTreatmentConstructorInvalidStartHour
+Tests if an IllegalArgumentException is thrown when providing an invalid (negative) start hour to the Treatment constructor.
+### testScheduledTaskConstructorInvalidHour
+Tests if an IllegalArgumentException is thrown when providing an invalid (negative) hour to the ScheduledTask constructor.
+### testScheduledTaskConstructorInvalidDuration
+Tests if an IllegalArgumentException is thrown when providing an invalid (negative) duration to the ScheduledTask constructor.
+### testScheduledTaskConstructorInvalidAnimalCount
+Tests if an IllegalArgumentException is thrown when providing an invalid (negative) animal count to the ScheduledTask constructor.

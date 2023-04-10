@@ -40,6 +40,16 @@ public class ScheduledTask {
 
     public ScheduledTask(int hour, String description, TaskType taskType, String species, String animalNickname,
             int animalCount, int duration) {
+        if (hour < 0 || hour > 23) {
+            throw new IllegalArgumentException("Hour must be between 0 and 23.");
+        }
+        if (animalCount < 1) {
+            throw new IllegalArgumentException("Animal count must be a positive integer.");
+        }
+        if (duration < 1) {
+            throw new IllegalArgumentException("Duration must be a positive integer.");
+        }
+
         this.hour = hour;
         this.description = description;
         this.type = taskType;
@@ -59,6 +69,15 @@ public class ScheduledTask {
      */
 
     public ScheduledTask(int hour, String description, TaskType taskType, String animalNickname, int duration) {
+        if (hour < 0 || hour > 23) {
+            throw new IllegalArgumentException("Hour must be between 0 and 23.");
+        }
+        if (animalCount < 1) {
+            throw new IllegalArgumentException("Animal count must be a positive integer.");
+        }
+        if (duration < 1) {
+            throw new IllegalArgumentException("Duration must be a positive integer.");
+        }
         this.hour = hour;
         this.description = description;
         this.type = taskType;
@@ -91,6 +110,15 @@ public class ScheduledTask {
      */
 
     public ScheduledTask(int hour, String description, TaskType taskType, int duration, String animalNickname) {
+        if (hour < 0 || hour > 23) {
+            throw new IllegalArgumentException("Hour must be between 0 and 23.");
+        }
+        if (animalCount < 1) {
+            throw new IllegalArgumentException("Animal count must be a positive integer.");
+        }
+        if (duration < 1) {
+            throw new IllegalArgumentException("Duration must be a positive integer.");
+        }
         this.hour = hour;
         this.description = description;
         this.type = taskType;

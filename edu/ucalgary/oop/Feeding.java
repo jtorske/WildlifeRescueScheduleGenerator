@@ -19,6 +19,12 @@ public class Feeding {
      *                          constructor.
      */
     public Feeding(int durationPerAnimal, int prepTime) {
+        if (durationPerAnimal < 1) {
+            throw new IllegalArgumentException("Duration per animal must be a positive integer.");
+        }
+        if (prepTime < 0) {
+            throw new IllegalArgumentException("Preparation time must be a non-negative integer.");
+        }
         this.prepTime = prepTime;
         this.durationPerAnimal = durationPerAnimal;
     }
@@ -73,6 +79,7 @@ public class Feeding {
      * @return A list of integers representing the feeding hours for the given active time.
      */
     public List<Integer> getFeedingHours(String activeTime) {
+
         List<Integer> feedingHours;
 
         switch (activeTime) {

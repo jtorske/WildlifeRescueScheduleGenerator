@@ -8,6 +8,15 @@ public class MedicalTask {
     private int maxWindow;
 
     public MedicalTask(Integer taskID, String description, int duration, int maxWindow) {
+        if (taskID == null || taskID < 1) {
+            throw new IllegalArgumentException("Task ID must be a positive integer.");
+        }
+        if (duration < 1) {
+            throw new IllegalArgumentException("Duration must be a positive integer.");
+        }
+        if (maxWindow < 1) {
+            throw new IllegalArgumentException("Max window must be a positive integer.");
+        }
         this.TASKID = taskID;
         this.description = description;
         this.duration = duration;

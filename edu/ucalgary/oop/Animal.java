@@ -23,6 +23,15 @@ public class Animal {
      *                       valueOf() method of the Integer class.
      */
     public Animal(Integer animalID, String animalNickname, String animalSpecies) {
+        if (animalID == null || animalID < 1) {
+            throw new IllegalArgumentException("Animal ID must be a positive integer.");
+        }
+        if (animalNickname == null || animalNickname.isEmpty()) {
+            throw new IllegalArgumentException("Animal nickname cannot be empty.");
+        }
+        if (animalSpecies == null || animalSpecies.isEmpty()) {
+            throw new IllegalArgumentException("Species cannot be empty.");
+        }
         this.ANIMALID = animalID;
         this.ANIMALSPECIES = animalSpecies;
         this.animalNickname = animalNickname;
