@@ -1,6 +1,6 @@
 package edu.ucalgary.oop;
 
-
+import java.util.List;
 import java.util.regex.*;
 
 public class Animal {
@@ -10,7 +10,7 @@ public class Animal {
     private String activeTime;
     private String animalNickname;
     private Feeding meal;
-    private final Pattern patternIsOrphaned = Pattern.compile("^[a-zA-Z]+$");
+    private final Pattern PATTERNISORPHANED = Pattern.compile("^[a-zA-Z]+$");
 
     /**
      * Constructor of Animal, sets all initial field values for the animal.
@@ -23,15 +23,6 @@ public class Animal {
      *                       valueOf() method of the Integer class.
      */
     public Animal(Integer animalID, String animalNickname, String animalSpecies) {
-        if (animalID == null || animalID < 1) {
-            throw new IllegalArgumentException("Animal ID must be a positive integer.");
-        }
-        if (animalNickname == null || animalNickname.isEmpty()) {
-            throw new IllegalArgumentException("Animal nickname cannot be empty.");
-        }
-        if (animalSpecies == null || animalSpecies.isEmpty()) {
-            throw new IllegalArgumentException("Species cannot be empty.");
-        }
         this.ANIMALID = animalID;
         this.ANIMALSPECIES = animalSpecies;
         this.animalNickname = animalNickname;
@@ -39,7 +30,7 @@ public class Animal {
 
         // check the pattern of the animal's name, if there are multiple names, set
         // isOphaned to true.
-        Matcher matcher = this.patternIsOrphaned.matcher(this.animalNickname);
+        Matcher matcher = this.PATTERNISORPHANED.matcher(this.animalNickname);
         if (!matcher.find()) {
             /**
              * If animal is Orphaned, do the following.
@@ -109,12 +100,6 @@ public class Animal {
         this.isOrphaned = bool;
     }
 
-    /**
-     * Sets activeTime of animal to NOCTURNAL, DIURNAL or CREPUSCULAR based on the
-     * argument.
-     * 
-     * @param activeTime NOCTURNAL, DIURNAL or CREPUSCULAR.
-     */
 
     /**
      * Gets the feeding object of the animal.
@@ -126,12 +111,6 @@ public class Animal {
     }
 
     /**
-     * Gets the activeTime of the animal.
-     * 
-     * @return the activeTime of the animal.
-     */
-
-    /**
      * Gets the species of the animal.
      * 
      * @return the species of the animal.
@@ -139,6 +118,12 @@ public class Animal {
     public String getSpecies() {
         return this.ANIMALSPECIES;
     }
+
+    /**
+     * Gets the activeTime of the animal.
+     * 
+     * @return the activeTime of the animal.
+     */
 
     public String getActiveTime() {
         return this.activeTime;

@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Arrays;
 
 public class Feeding {
-    private final int prepTime;
-    private final int durationPerAnimal;
+    private final int PREPTIME;
+    private final int DURATIONPERANIMAL;
     private int numberOfAnimals;
     private int maxWindow = 3;
 
@@ -25,8 +25,8 @@ public class Feeding {
         if (prepTime < 0) {
             throw new IllegalArgumentException("Preparation time must be a non-negative integer.");
         }
-        this.prepTime = prepTime;
-        this.durationPerAnimal = durationPerAnimal;
+        this.PREPTIME = prepTime;
+        this.DURATIONPERANIMAL = durationPerAnimal;
     }
 
     /**
@@ -44,7 +44,7 @@ public class Feeding {
      * @return the preparation time
      */
     public int getPrepTime() {
-        return this.prepTime;
+        return this.PREPTIME;
     }
 
     /**
@@ -53,7 +53,7 @@ public class Feeding {
      * @return the feeding duration per animal
      */
     public int getDurationPerAnimal() {
-        return this.durationPerAnimal;
+        return this.DURATIONPERANIMAL;
     }
 
     /**
