@@ -1,7 +1,8 @@
 package edu.ucalgary.oop;
-    /**
-     * Represents a scheduled task in the animal clinic's schedule.
-     */
+
+/**
+ * Represents a scheduled task in the animal clinic's schedule.
+ */
 
 public class ScheduledTask {
     private int hour;
@@ -12,13 +13,16 @@ public class ScheduledTask {
     private int animalCount;
     private boolean backupVolunteer;
 
-    private int duration; 
+    private int duration;
+
     /**
-     * Constructs a ScheduledTask with the provided hour, description, task type, and duration.
-     * @param hour The hour of the scheduled task.
+     * Constructs a ScheduledTask with the provided hour, description, task type,
+     * and duration.
+     * 
+     * @param hour        The hour of the scheduled task.
      * @param description The description of the scheduled task.
-     * @param taskType The type of the scheduled task.
-     * @param duration The duration of the scheduled task in minutes.
+     * @param taskType    The type of the scheduled task.
+     * @param duration    The duration of the scheduled task in minutes.
      */
     public ScheduledTask(int hour, String description, TaskType taskType, int duration) {
         this.hour = hour;
@@ -28,14 +32,16 @@ public class ScheduledTask {
     }
 
     /**
-     * Constructs a ScheduledTask with the provided hour, description, task type, species, animal nickname, animal count, and duration.
-     * @param hour The hour of the scheduled task.
-     * @param description The description of the scheduled task.
-     * @param taskType The type of the scheduled task.
-     * @param species The species of the animal associated with the task.
+     * Constructs a ScheduledTask with the provided hour, description, task type,
+     * species, animal nickname, animal count, and duration.
+     * 
+     * @param hour           The hour of the scheduled task.
+     * @param description    The description of the scheduled task.
+     * @param taskType       The type of the scheduled task.
+     * @param species        The species of the animal associated with the task.
      * @param animalNickname The nickname of the animal associated with the task.
-     * @param animalCount The number of animals involved in the task.
-     * @param duration The duration of the scheduled task in minutes.
+     * @param animalCount    The number of animals involved in the task.
+     * @param duration       The duration of the scheduled task in minutes.
      */
 
     public ScheduledTask(int hour, String description, TaskType taskType, String species, String animalNickname,
@@ -60,21 +66,21 @@ public class ScheduledTask {
     }
 
     /**
-     * Constructs a ScheduledTask with the provided hour, description, task type, animal nickname, and duration.
-     * @param hour The hour of the scheduled task.
-     * @param description The description of the scheduled task.
-     * @param taskType The type of the scheduled task.
+     * Constructs a ScheduledTask with the provided hour, description, task type,
+     * animal nickname, and duration.
+     * 
+     * @param hour           The hour of the scheduled task.
+     * @param description    The description of the scheduled task.
+     * @param taskType       The type of the scheduled task.
      * @param animalNickname The nickname of the animal associated with the task.
-     * @param duration The duration of the scheduled task in minutes.
+     * @param duration       The duration of the scheduled task in minutes.
      */
 
     public ScheduledTask(int hour, String description, TaskType taskType, String animalNickname, int duration) {
         if (hour < 0 || hour > 23) {
             throw new IllegalArgumentException("Hour must be between 0 and 23.");
         }
-        if (animalCount < 1) {
-            throw new IllegalArgumentException("Animal count must be a positive integer.");
-        }
+
         if (duration < 1) {
             throw new IllegalArgumentException("Duration must be a positive integer.");
         }
@@ -93,7 +99,9 @@ public class ScheduledTask {
 
     /**
      * Sets the task to use a backup volunteer or not.
-     * @param backupVolunteer true if the task should use a backup volunteer, false otherwise.
+     * 
+     * @param backupVolunteer true if the task should use a backup volunteer, false
+     *                        otherwise.
      */
 
     public void setBackupVolunteer(boolean backupVolunteer) {
@@ -101,11 +109,13 @@ public class ScheduledTask {
     }
 
     /**
-     * Constructs a ScheduledTask with the provided hour, description, task type, duration, and animal nickname.
-     * @param hour The hour of the scheduled task.
-     * @param description The description of the scheduled task.
-     * @param taskType The type of the scheduled task.
-     * @param duration The duration of the scheduled task in minutes.
+     * Constructs a ScheduledTask with the provided hour, description, task type,
+     * duration, and animal nickname.
+     * 
+     * @param hour           The hour of the scheduled task.
+     * @param description    The description of the scheduled task.
+     * @param taskType       The type of the scheduled task.
+     * @param duration       The duration of the scheduled task in minutes.
      * @param animalNickname The nickname of the animal associated with the task.
      */
 
@@ -128,6 +138,7 @@ public class ScheduledTask {
 
     /**
      * Returns the species of the animal associated with the task.
+     * 
      * @return The species of the animal.
      */
 
@@ -135,44 +146,55 @@ public class ScheduledTask {
         return species;
     }
 
-        /**
+    /**
      * Returns the task type of the scheduled task.
+     * 
      * @return The task type.
      */
 
     public TaskType getTaskType() {
         return type;
     }
+
     /**
      * Returns the animal nickname of the animal associated with the task.
+     * 
      * @return The animal nickname.
      */
     public String getAnimalNickname() {
         return animalNickname;
     }
+
     /**
      * Returns the number of animals involved in the task.
+     * 
      * @return The animal count.
      */
     public int getAnimalCount() {
         return animalCount;
     }
+
     /**
      * Returns the hour of the scheduled task.
+     * 
      * @return The hour.
      */
     public int getHour() {
         return hour;
     }
+
     /**
      * Returns the description of the scheduled task.
+     * 
      * @return The description.
      */
     public String getDescription() {
         return description;
     }
-        /**
+
+    /**
      * Returns a string representation of the ScheduledTask.
+     * 
      * @return A string containing the task's hour, description, and animal details.
      */
     @Override
@@ -181,9 +203,10 @@ public class ScheduledTask {
         String taskDetails = (animalCount > 0 ? " - " + species + " (" + animalCount + "): " + animalNickname : "");
         return formattedTime + " * " + description + taskDetails;
     }
-    
+
     /**
      * Returns the duration of the scheduled task.
+     * 
      * @return The duration in minutes.
      */
     public int getDuration() {
