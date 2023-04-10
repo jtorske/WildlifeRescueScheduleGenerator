@@ -67,7 +67,11 @@ public class Feeding {
     public int getMaxWindow() {
         return maxWindow;
     }
-
+    /**
+     * Returns a list of feeding hours based on the active time of an animal.
+     * @param activeTime A string representing the active time of the animal ("NOCTURNAL", "DIURNAL", or "CREPUSCULAR").
+     * @return A list of integers representing the feeding hours for the given active time.
+     */
     public List<Integer> getFeedingHours(String activeTime) {
         List<Integer> feedingHours;
 
