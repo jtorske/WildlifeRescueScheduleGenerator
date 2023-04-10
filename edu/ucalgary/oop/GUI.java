@@ -4,7 +4,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -12,10 +18,10 @@ import java.util.List;
 
 public class GUI {
     private JFrame frame;
-    private JButton displayScheduleButton, manualTaskReadjustmentButton;
-    private JTextArea textArea;
-    private JScrollPane scrollPane;
+    private JButton displayScheduleButton;
     private ConnectDatabase connectDatabase;
+    private JButton saveToTextButton;
+    private Schedule schedule;
 
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
@@ -37,10 +43,6 @@ public class GUI {
             }
         }
         return null;
-    }
-
-    private void showPopup(String title, String message) {
-        JOptionPane.showMessageDialog(frame, message, title, JOptionPane.INFORMATION_MESSAGE);
     }
 
     public void generateSchedule() {
@@ -191,7 +193,6 @@ public class GUI {
             availableTimeMap.put(hour, availableTimeMap.get(hour) - duration);
         }
         for (Animal animal : nonOrphanedAnimals) {
-            int animalId = animal.getAnimalID();
             int cleaningDuration = animal.getCageCleaningDuration(animal.getSpecies());
             String animalNickname = animal.getAnimalNickname();
 

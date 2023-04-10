@@ -3,6 +3,9 @@ package edu.ucalgary.oop;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -26,8 +29,8 @@ public class Schedule {
         int totalDuration = 0;
         for (ScheduledTask task : tasks) {
             if (task.getHour() == hour) {
-                totalDuration += task.getDuration(); // Assumes you have a getDuration() method in the ScheduledTask
-                                                     // class
+                totalDuration += task.getDuration();
+
             }
         }
         return totalDuration;
@@ -71,5 +74,27 @@ public class Schedule {
                         task.getAnimalNickname(), task.getDuration());
             }
         }
+
+        try {
+            PrintWriter writer = new PrintWriter(new FileWriter("schedule.txt"));
+            writer.printf("Schedule for: %s\n", currentDateFormatted);
+            writer.println("--------------------------------------------------");
+            tasks.sort(Comparator.comparingInt(ScheduledTask::getHour));
+
+            for (ScheduledTask task : tasks) {
+                if (task.getTaskType() == TaskType.FEEDING) {
+                    writer.printf("%02d:00 - %s - %s (%d: %s): %d\n", task.getHour(), task.getDescription(),
+                            task.getSpecies(),
+                            task.getAnimalCount(), task.getAnimalNickname(), task.getDuration());
+                } else {
+                    writer.printf("%02d:00 - %s (%s): %d\n", task.getHour(), task.getDescription(),
+                            task.getAnimalNickname(), task.getDuration());
+                }
+            }
+            writer.close();
+        } catch (IOException e) {
+            System.err.println("Error writing schedule to file: " + e.getMessage());
+        }
     }
+
 }
