@@ -4,13 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -20,9 +15,6 @@ public class GUI {
     private JFrame frame;
     private JButton displayScheduleButton;
     private ConnectDatabase connectDatabase;
-    private JButton saveToTextButton;
-    private Schedule schedule;
-
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -35,7 +27,13 @@ public class GUI {
             }
         });
     }
-
+    /**
+     * Finds a task in the list by its ID
+     *
+     * @param taskList the list of tasks to search
+     * @param taskId   the ID of the task to find
+     * @return the task with the given ID, or null if not found
+     */
     private MedicalTask findTaskById(List<MedicalTask> taskList, Integer taskId) {
         for (MedicalTask task : taskList) {
             if (task.getTaskID().equals(taskId)) {
@@ -44,7 +42,9 @@ public class GUI {
         }
         return null;
     }
-
+    /**
+     * Generates a schedule for treatments, feedings, and cage cleanings
+     */
     public void generateSchedule() {
 
         ConnectDatabase connectDB = new ConnectDatabase();
@@ -64,7 +64,8 @@ public class GUI {
 
         Schedule schedule = new Schedule();
 
-        // 1. Add all treatments to the schedule
+        //Add all treatments to the schedule
+        //Adds them at there original times and stores the duration of the task and other details
         for (Treatment treatment : treatmentList) {
             int treatmentHour = treatment.getStartHour();
             MedicalTask associatedTask = findTaskById(taskList, treatment.getTaskID());
@@ -89,7 +90,7 @@ public class GUI {
 
         connectDB.close();
 
-        // 2. Filter out orphaned animals
+        //Filter out orphaned animals
         ArrayList<Animal> nonOrphanedAnimals = new ArrayList<>();
         for (Animal animal : animalList) {
             if (!animal.getIsOrphaned()) {
@@ -97,7 +98,7 @@ public class GUI {
             }
         }
 
-        // 3. Calculate feeding times and durations
+        //Calculate feeding times and durations and stores them
         LinkedHashMap<String, ArrayList<Animal>> speciesAnimalsMap = new LinkedHashMap<>();
         for (Animal animal : nonOrphanedAnimals) {
             String species = animal.getSpecies();
@@ -110,7 +111,8 @@ public class GUI {
             }
         }
 
-        // 4. Add feeding tasks based on available time in each hour after treatments
+        //Add feeding tasks based on available time in each hour after treatments
+        //Adds them at the earliest possible time based of the animals active time and time available in the hour
         for (int hour = 0; hour < 24; hour++) {
             for (Map.Entry<String, ArrayList<Animal>> entry : speciesAnimalsMap.entrySet()) {
                 String species = entry.getKey();
@@ -182,7 +184,7 @@ public class GUI {
                 }
             }
         }
-        // 5. Schedule cage cleaning with the most available time in each hour
+        //Schedule cage cleaning with the most available time in each hour
         HashMap<Integer, Integer> availableTimeMap = new HashMap<>();
         for (int hour = 0; hour < 24; hour++) {
             availableTimeMap.put(hour, 60);
@@ -209,7 +211,7 @@ public class GUI {
                 }
 
                 if (targetHour == -1) {
-                    // No more available time in any hour, break out of loop
+
                     break;
                 }
 
@@ -221,9 +223,7 @@ public class GUI {
             }
         }
 
-        // Call printSchedule() after adding all tasks to the schedule
-
-        // 6. Print unscheduled feedings
+        //Print any unscheduled feedings
         StringBuilder unscheduledFeedings = new StringBuilder();
         for (Map.Entry<String, ArrayList<Animal>> entry : speciesAnimalsMap.entrySet()) {
             String species = entry.getKey();
@@ -248,7 +248,12 @@ public class GUI {
 
         connectDB.close();
     }
-
+    /**
+     * Finds an animal object in a list of animals by its ID.
+     * @param animals The list of animals to search in.
+     * @param animalId The ID of the animal to search for.
+     * @return The animal object if found, otherwise null.
+     */
     private Animal findAnimalById(ArrayList<Animal> animals, Integer animalId) {
         for (Animal animal : animals) {
             if (animal.getAnimalID().equals(animalId)) {
@@ -257,7 +262,16 @@ public class GUI {
         }
         return null;
     }
-
+    /**
+     * Prompts the user to manually readjust a treatment's scheduling.
+     * @param treatmentDescription The description of the treatment.
+     * @param taskId The ID of the task.
+     * @param initialHour The initial hour for the treatment.
+     * @param schedule The schedule object to modify.
+     * @param animalList The list of animals.
+     * @param treatment The treatment object.
+     * @param taskList The list of medical tasks.
+     */
     private void promptManualReadjustment(String treatmentDescription, int taskId, int initialHour, Schedule schedule,
             ArrayList<Animal> animalList, Treatment treatment, List<MedicalTask> taskList) {
         JFrame manualAdjustmentFrame = new JFrame("Manual Readjustment");
@@ -338,7 +352,14 @@ public class GUI {
 
         manualAdjustmentFrame.setVisible(true);
     }
-
+    /**
+     * Finds the earliest available hour to schedule a treatment within a given window.
+     * @param schedule The schedule object.
+     * @param initialHour The initial hour to start searching from.
+     * @param maxWindow The maximum window of hours to search.
+     * @param taskDuration The duration of the task.
+     * @return The first available hour if found, otherwise -1.
+     */
     private int findAvailableHourForTreatment(Schedule schedule, int initialHour, int maxWindow, int taskDuration) {
         for (int window = 0; window < maxWindow; window++) {
             int targetHour = initialHour + window;
@@ -351,6 +372,9 @@ public class GUI {
         return -1;
     }
 
+    /**
+     * Initializes the GUI, creates the frame and sets up the action listeners.
+     */
     private void initialize() {
         frame = new JFrame("Database GUI");
         frame.setBounds(100, 100, 200, 100);
