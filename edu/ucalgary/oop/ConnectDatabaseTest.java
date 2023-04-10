@@ -4,8 +4,7 @@ import org.junit.*;
 
 import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
-import java.lang.InterruptedException;
-import java.sql.*;
+
 
 public class ConnectDatabaseTest {
     private ConnectDatabase connectDB;

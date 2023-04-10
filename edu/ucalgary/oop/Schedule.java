@@ -9,22 +9,37 @@ import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Schedule class represents a schedule of tasks for a day.
+ */
 public class Schedule {
     private ArrayList<ScheduledTask> tasks;
-
+    /**
+     * Returns the list of scheduled tasks.
+     * @return The list of scheduled tasks.
+     */
     public List<ScheduledTask> getScheduledTasks() {
         return tasks;
     }
-
+    /**
+     * Constructs a new empty Schedule.
+     */
     public Schedule() {
         tasks = new ArrayList<>();
     }
-
+    /**
+     * Adds a task to the schedule and sorts the tasks by hour.
+     * @param task The task to add to the schedule.
+     */
     public void addTask(ScheduledTask task) {
         tasks.add(task);
         tasks.sort(Comparator.comparingInt(ScheduledTask::getHour));
     }
-
+    /**
+     * Returns the total duration of tasks scheduled for a given hour.
+     * @param hour The hour for which to calculate the total duration of tasks.
+     * @return The total duration of tasks for the given hour.
+     */
     public int getTotalTaskDurationForHour(int hour) {
         int totalDuration = 0;
         for (ScheduledTask task : tasks) {
@@ -35,7 +50,11 @@ public class Schedule {
         }
         return totalDuration;
     }
-
+    /**
+     * Checks if the schedule contains a feeding task for a given animal.
+     * @param animalNickname The nickname of the animal to check for a feeding task.
+     * @return true if the schedule contains a feeding task for the given animal, false otherwise.
+     */
     public boolean containsFeedingForAnimal(String animalNickname) {
         for (ScheduledTask task : tasks) {
             if (task.getTaskType() == TaskType.FEEDING && task.getAnimalNickname().contains(animalNickname)) {
@@ -44,7 +63,12 @@ public class Schedule {
         }
         return false;
     }
-
+    /**
+     * Returns the number of feedings for a given species and hour.
+     * @param species The species for which to count feedings.
+     * @param hour The hour for which to count feedings.
+     * @return The number of feedings for the given species and hour.
+     */
     public int getNumberOfFeedingsForSpeciesAndHour(String species, int hour) {
         int count = 0;
         for (ScheduledTask task : tasks) {
@@ -54,7 +78,9 @@ public class Schedule {
         }
         return count;
     }
-
+    /**
+     * Prints the schedule to the console and writes it to a file.
+     */
     public void printSchedule() {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMMM d, yyyy");
         LocalDate currentDate = LocalDate.now();
