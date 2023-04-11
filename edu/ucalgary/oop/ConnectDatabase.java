@@ -1,6 +1,7 @@
 /**
  * Group 69 Final Project
  * Group members are: Hiu Sum Yuen, Bruce Gillis, Jordan Torske, Elea Bahhadi
+ * @version 2.0
  */
 package edu.ucalgary.oop;
 
@@ -21,8 +22,8 @@ import java.util.*;
  */
 public class ConnectDatabase implements ToConnectDB{
 
-    final private String USER = "oop";
-    final private String PASSWORD = "password";
+    final private String USER = "root";
+    final private String PASSWORD = "Tourgelis1";
     private Connection dbConnect;
     private ResultSet results;
 
