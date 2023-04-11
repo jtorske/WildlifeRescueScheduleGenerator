@@ -1,10 +1,20 @@
 Group members are: Hiu Sum Yuen, Bruce Gillis, Jordan Torske, Elea Bahhadi
 # Example Wildlife Rescue Schedule Generator
-
+The Wildlife Rescue Schedule Generator is a program designed to automate the scheduling process for volunteers caring for injured and orphaned wild animals. The program reads from a database updated throughout the day to keep track of required medical tasks, and schedules tasks such as feeding, medical treatments, and cage cleaning for the animals in residence. The program optimizes efficiency by grouping similar tasks together and provides a list of tasks to complete within each hour of the day. If the available time is insufficient to complete all tasks, the program notifies the backup volunteer. The primary goal is to ensure the animals receive the necessary care while making the scheduling process more efficient.
 ## What to install
-WIP
+### Before running this program, make sure you have the following software installed on your system:
+Java: This program requires Java 8 or later to be installed on your system. You can download the latest version of Java from the official Java website.
+
+MySQL: This program requires a MySQL database server, MySQL Workbench, MySQL Shell and MySQL Connector/J driver to be installed on your system. You can download the latest version of these from the official MySQL website.
+
 ## How to use
-WIP
+To use this application, you would need to have a database set up with animal information, medical tasks, and treatments.
+
+Once you have set up the database, you can run the application and click the "DisplaySchedule" button to generate a schedule. The schedule will be displayed in a text area.
+
+If a treatment cannot be scheduled due to lack of available time, the application will prompt the user to manually readjust the scheduling by either using a backup volunteer or shifting the treatment to a different hour.
+
+The application will also filter out orphaned animals and print any unscheduled feedings.
 ## Classes
 ### Animal
 This class represents an Animal object with attributes like animal ID, species, orphan status, active time, nickname, and a Feeding object. The class provides a constructor, toString method, and getter methods for each attribute.
