@@ -15,7 +15,7 @@ import java.util.*;
  * closes everytime a new results is open through a different method.
  * 3. Use the close() method to disconnect from the database.
  */
-public class ConnectDatabase {
+public class ConnectDatabase implements ToConnectDB{
 
     final private String USER = "root";
     final private String PASSWORD = "Tourgelis1";
@@ -29,8 +29,9 @@ public class ConnectDatabase {
     /**
      * Creates a connection between the sql database and the program.
      * 
-     * @return
+     * @return true if connection is successful, false otherwise.
      */
+    @Override
     public boolean createConnection() {
         try {
             this.dbConnect = DriverManager.getConnection(
@@ -46,6 +47,7 @@ public class ConnectDatabase {
     /**
      * Closes the database.
      */
+    @Override
     public void close() {
         try {
             this.results.close();
@@ -236,6 +238,10 @@ public class ConnectDatabase {
         }
     }
 
+    /**
+     * Get the results of the query.
+     * @return the results of the query.
+     */
     public ResultSet getResults() {
         return this.results;
     }
