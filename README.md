@@ -16,23 +16,23 @@ If a treatment cannot be scheduled due to lack of available time, the applicatio
 
 The application will also filter out orphaned animals and print any unscheduled feedings.
 ## Classes
-### Animal
+### Animal @version 1.2
 This class represents an Animal object with attributes like animal ID, species, orphan status, active time, nickname, and a Feeding object. The class provides a constructor, toString method, and getter methods for each attribute.
-### ConnectDatabase
+### ConnectDatabase @version 2.0
 This class is responsible for connecting to a MySQL database, executing queries, and managing the results. It provides methods for connecting to the database, closing the connection, selecting animal, medical task, and treatment records, and inserting and deleting tasks. It also contains a method to get the results of the executed queries.
-### Feeding
+### Feeding @version 1.1
 This class represents a Feeding object with attributes like preparation time, duration per animal, number of animals, and maximum feeding window. The class provides a constructor, setter methods for max window, and getter methods for each attribute. It also contains a method called getFeedingHours that returns a list of feeding hours based on the active time of an animal.
-### Schedule
+### Schedule @version 2.1
 Thiss class represents a day's schedule of tasks for an animal clinic. It contains a list of ScheduledTask objects and provides methods to add tasks, calculate total task durations for specific hours, and check if the schedule contains a feeding task for a particular animal.
-### ScheduleTask 
+### ScheduleTask @version 2.4
 This class represents a task in the animal clinic's schedule. It contains details about the scheduled task, such as the hour, description, task type, and duration. In addition, it provides information about the animal(s) associated with the task, such as the species, nickname, and number of animals involved.
-### Treatment
+### Treatment @version 1.2
 This class represents an individual treatment in the Treatments table. It contains the treatment ID, animal ID, task ID, and start hour. The class also relates the IDs together using the ConnectIDs class.
-### Medical Task
+### Medical Task @version 1.1
 This class represents a medical task to be performed in the animal clinic. This class contains the task ID, description, duration, and maximum time window for each task.
-### GUI
+### GUI @version 6.3
 This class implements User Interface as well as a sorting algorithm. It is used to construct the schedule after sorting treatments, animals and tasks are inputted through SQL. 
-## Tests
+## Tests 
 ### testAnimalConstructor 
 Tests if the Animal constructor creates an Animal object correctly and initializes its properties.
 ### testCageCleaningTimeForCoyote 
