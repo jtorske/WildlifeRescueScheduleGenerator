@@ -109,3 +109,9 @@ Tests if an IllegalArgumentException is thrown when providing an invalid (negati
 Tests if an IllegalArgumentException is thrown when providing an invalid (negative) duration to the ScheduledTask constructor.
 ### testScheduledTaskConstructorInvalidAnimalCount
 Tests if an IllegalArgumentException is thrown when providing an invalid (negative) animal count to the ScheduledTask constructor.
+### testSelectAnimals
+Tests if the correct list of animals is retrieved from the database. It checks the size of the returned list, ensuring it contains the expected number of animal objects. It also verifies that the nickname of a specific animal in the list is as expected.
+### testSelectTasks
+Tests if the correct list of medical tasks is retrieved from the database. It checks the size of the returned list, ensuring it contains the expected number of MedicalTask objects.
+### testSelectTreatments
+Tests if the correct list of treatments is retrieved from the database. It checks the size of the returned list, ensuring it contains the expected number of Treatment objects.
