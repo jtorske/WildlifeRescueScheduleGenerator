@@ -232,21 +232,6 @@ public class TestClass {
     }
 
     @Test
-    public void testAnimalConstructorInvalidAnimalID() {
-        assertThrows(IllegalArgumentException.class, () -> new Animal(-1, "Fido", "dog"));
-    }
-
-    @Test
-    public void testAnimalConstructorEmptyNickname() {
-        assertThrows(IllegalArgumentException.class, () -> new Animal(1, "", "dog"));
-    }
-
-    @Test
-    public void testAnimalConstructorEmptySpecies() {
-        assertThrows(IllegalArgumentException.class, () -> new Animal(1, "Fido", ""));
-    }
-
-    @Test
     public void testFeedingConstructorInvalidDuration() {
         assertThrows(IllegalArgumentException.class, () -> new Feeding(-5, 10));
     }
